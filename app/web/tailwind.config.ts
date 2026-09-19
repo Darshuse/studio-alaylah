@@ -1,0 +1,56 @@
+import type { Config } from "tailwindcss";
+
+// توكنز التصميم من family_tales_studio/DESIGN.md
+const config: Config = {
+  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
+  theme: {
+    extend: {
+      colors: {
+        surface: "#fbf9f5",
+        background: "#fbf9f5",
+        "surface-bright": "#fbf9f5",
+        "surface-dim": "#dbdad6",
+        "surface-container-lowest": "#ffffff",
+        "surface-container-low": "#f5f3ef",
+        "surface-container": "#efeeea",
+        "surface-container-high": "#eae8e4",
+        "surface-container-highest": "#e4e2de",
+        "surface-variant": "#e4e2de",
+        "on-surface": "#1b1c1a",
+        "on-surface-variant": "#414846",
+        "on-background": "#1b1c1a",
+        outline: "#717976",
+        "outline-variant": "#c1c8c5",
+        primary: "#032521",
+        "on-primary": "#ffffff",
+        "primary-container": "#1b3b36",
+        "on-primary-container": "#84a59e",
+        "primary-fixed": "#c7eae2",
+        "primary-fixed-dim": "#abcec6",
+        secondary: "#934b01",
+        "on-secondary": "#ffffff",
+        "secondary-container": "#fea056",
+        "on-secondary-container": "#713800",
+        "secondary-fixed": "#ffdcc5",
+        "secondary-fixed-dim": "#ffb782",
+        "on-secondary-fixed": "#301400",
+        tertiary: "#321a00",
+        "tertiary-container": "#502d00",
+        "on-tertiary-container": "#cb9256",
+        "tertiary-fixed": "#ffdcbd",
+        "tertiary-fixed-dim": "#f9ba7a",
+        error: "#ba1a1a",
+        "error-container": "#ffdad6",
+      },
+      borderRadius: { DEFAULT: "0.5rem", md: "0.75rem", lg: "1rem", xl: "1.5rem", full: "9999px" },
+      spacing: {
+        gutter: "1rem", margin: "1.25rem",
+        "space-xs": "0.375rem", "space-sm": "0.75rem", "space-md": "1.25rem",
+        "space-lg": "1.75rem", "space-xl": "2.5rem",
+      },
+      fontFamily: { sans: ["IBM Plex Sans Arabic", "IBM Plex Sans", "sans-serif"] },
+    },
+  },
+  plugins: [],
+};
+export default config;

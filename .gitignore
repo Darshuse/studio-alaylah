@@ -1,0 +1,31 @@
+# ===== secrets (NEVER commit) =====
+*.key
+.env
+.env.local
+*.local
+**/fal.key
+**/together.key
+**/elevenlabs.key
+
+# ===== Node / Next =====
+**/node_modules/
+**/.next/
+**/out/
+**/dist/
+npm-debug.log*
+yarn-error.log*
+
+# ===== Java / Maven =====
+**/target/
+*.class
+
+# ===== generated / scratch dirs =====
+tmp/
+output/
+outputs/
+cropped_images/
+promo_images/
+
+# ===== OS =====
+.DS_Store
+Thumbs.db

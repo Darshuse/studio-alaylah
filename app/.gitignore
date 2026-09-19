@@ -1,0 +1,21 @@
+# Java / Maven
+api/target/
+*.class
+
+# Node / Next
+web/node_modules/
+web/.next/
+web/out/
+workers/node_modules/
+
+# env & secrets
+.env
+.env.local
+*.local
+*.key
+fal.key
+
+# OS
+.DS_Store
+Thumbs.db
+elevenlabs.key

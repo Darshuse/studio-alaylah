@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>استوديو حكايات العائلة</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script id="tailwind-config">
+tailwind.config = { theme: { extend: {
+  colors: {
+    "surface-container":"#efeeea","surface-container-high":"#eae8e4","inverse-on-surface":"#f2f0ed",
+    "primary-fixed-dim":"#abcec6","tertiary-fixed":"#ffdcbd","primary-container":"#1b3b36",
+    "on-background":"#1b1c1a","primary":"#032521","on-surface-variant":"#414846","primary-fixed":"#c7eae2",
+    "on-error-container":"#93000a","surface":"#fbf9f5","background":"#fbf9f5","on-tertiary-fixed-variant":"#673d05",
+    "surface-tint":"#44645f","on-primary-fixed-variant":"#2d4c47","error":"#ba1a1a","on-tertiary-container":"#cb9256",
+    "on-primary":"#ffffff","on-secondary":"#ffffff","secondary-fixed-dim":"#ffb782","on-error":"#ffffff",
+    "on-tertiary-fixed":"#2c1600","surface-container-highest":"#e4e2de","surface-container-lowest":"#ffffff",
+    "on-secondary-fixed-variant":"#703800","outline":"#717976","outline-variant":"#c1c8c5","secondary":"#934b01",
+    "on-primary-container":"#84a59e","secondary-fixed":"#ffdcc5","on-primary-fixed":"#00201c","tertiary-fixed-dim":"#f9ba7a",
+    "error-container":"#ffdad6","on-secondary-container":"#713800","tertiary":"#321a00","inverse-primary":"#abcec6",
+    "secondary-container":"#fea056","surface-bright":"#fbf9f5","tertiary-container":"#502d00","surface-container-low":"#f5f3ef",
+    "on-tertiary":"#ffffff","on-secondary-fixed":"#301400","surface-dim":"#dbdad6","on-surface":"#1b1c1a",
+    "inverse-surface":"#30312e","surface-variant":"#e4e2de"
+  },
+  borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},
+  spacing:{"space-xs":"0.375rem","space-xl":"2.5rem","space-md":"1.25rem","space-sm":"0.75rem","gutter":"1rem","margin":"1.25rem","space-lg":"1.75rem"},
+  fontFamily:{sans:["IBM Plex Sans Arabic","IBM Plex Sans","sans-serif"]},
+  fontSize:{
+    "label-sm":["12px",{lineHeight:"18px",fontWeight:"500"}],"title-md":["17px",{lineHeight:"26px",fontWeight:"600"}],
+    "body-sm":["13px",{lineHeight:"20px",fontWeight:"400"}],"headline-lg":["28px",{lineHeight:"40px",fontWeight:"600"}],
+    "headline-md":["20px",{lineHeight:"30px",fontWeight:"600"}],"label-md":["14px",{lineHeight:"20px",fontWeight:"500"}],
+    "headline-xl-mobile":["26px",{lineHeight:"38px",fontWeight:"700"}],"headline-lg-mobile":["22px",{lineHeight:"32px",fontWeight:"600"}],
+    "headline-xl":["34px",{lineHeight:"48px",fontWeight:"700"}],"body-md":["15px",{lineHeight:"24px",fontWeight:"400"}],
+    "body-lg":["17px",{lineHeight:"28px",fontWeight:"400"}]
+  }
+}}};
+</script>
+<style>
+  html,body{margin:0;padding:0;background:#fbf9f5;font-family:"IBM Plex Sans Arabic","IBM Plex Sans",sans-serif;}
+  body{overscroll-behavior:none;}
+  ::-webkit-scrollbar{display:none;}
+  .material-symbols-outlined{font-variation-settings:'wght' 400,'opsz' 24;}
+  .pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}
+  .pt-safe{padding-top:env(safe-area-inset-top,0px);}
+  /* screen router */
+  .screen{display:none;min-height:100vh;flex-direction:column;}
+  .screen.active{display:flex;}
+  /* phone framing when viewed on wide screens */
+  @media(min-width:520px){
+    body{background:#e8e6e1;display:flex;justify-content:center;}
+    #app{width:420px;min-height:100vh;box-shadow:0 0 60px rgba(0,0,0,.12);background:#fbf9f5;position:relative;overflow:hidden;}
+  }
+</style>
+</head>
+<body class="text-on-surface">
+<div id="app">
+
+  <!-- ============================ SCREEN: START STORY (home) ============================ -->
+  <section class="screen active" data-screen="start-story">
+    <header class="sticky top-0 z-40 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.03)]">
+      <div class="h-16 px-margin flex items-center justify-between">
+        <div class="flex items-center gap-space-sm">
+          <div class="w-9 h-9 rounded-full bg-primary-container flex items-center justify-center text-secondary-container shadow-[0_2px_6px_rgba(31,36,33,0.08)]">
+            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings:'FILL' 1;">auto_stories</span>
+          </div>
+          <div class="flex flex-col">
+            <div class="flex items-center gap-1.5">
+              <h1 class="text-title-md text-primary">حكايات العائلة</h1>
+              <span class="text-on-surface-variant text-label-sm">•</span>
+              <span class="text-label-sm text-on-surface-variant font-medium">بدء حكاية</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+              <span class="text-label-sm text-on-surface-variant">أرشيف خاص ومحمي 🔒</span>
+            </div>
+          </div>
+        </div>
+        <button class="w-11 h-11 rounded-full flex items-center justify-center text-primary hover:bg-surface-container-low transition-colors">
+          <span class="material-symbols-outlined text-[22px]">favorite</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="flex flex-col relative w-full px-margin pt-space-md pb-28 flex-grow">
+      <div class="flex flex-col w-full gap-space-md">
+
+        <!-- Greeting -->
+        <div class="flex flex-col gap-space-xs pt-space-xs">
+          <div class="inline-flex items-center gap-space-xs px-space-sm py-1 bg-surface-container-low rounded-full w-fit shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse"></span>
+            <span class="text-label-sm text-on-surface-variant font-medium">دفتر الذكريات العائلي المفتوح</span>
+          </div>
+          <h2 class="text-headline-lg-mobile text-primary tracking-tight mt-1">أهلاً يا أبا عمر، أي ذكرى نخلّدها اليوم؟</h2>
+          <p class="text-body-md text-on-surface-variant leading-relaxed">حكايتك بصوتك، وعائلتك أبطالها في كل مشهد. دع اللحظات تروى بصدق لتحفظها الأجيال.</p>
+        </div>
+
+        <!-- Memory preview -->
+        <div class="relative w-full h-36 rounded-xl overflow-hidden shadow-sm bg-primary-container">
+          <div class="absolute inset-0 bg-cover bg-center opacity-90" style="background-image:url('https://lh3.googleusercontent.com/aida-public/AB6AXuCZ3kkSmD-yKEmGyPuxBOOSQiYKnbvIoXhvRoUBoiig4itQujz5tqXv24rgp9BW0GLic-cLJbc6woJBZgs-u7UUx9y4tG1MopylGFs80G4JTytn5aqgk_tSzMMjsXHVGHPly-pdfZ_6u06p1r_7rHlyUr10CPanXzEQACSim_MbLREV_LOoBXo7EivjerAknVg-e59t0L_3krXMHSnqjs6CVRN7DYntN0C0qQx-zA0kYhWwZhsI5cDe')"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/30 to-transparent"></div>
+          <div class="absolute bottom-3 inset-x-3 flex items-center justify-between text-on-primary">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[20px] text-tertiary-fixed-dim" style="font-variation-settings:'FILL' 1;">auto_awesome</span>
+              <span class="text-label-sm font-medium">آخر قصة: «يوم الصيد مع الجد بالمرسى»</span>
+            </div>
+            <span class="text-label-sm bg-surface/20 backdrop-blur-md px-2.5 py-0.5 rounded-full">منذ 3 أيام</span>
+          </div>
+        </div>
+
+        <!-- Voice card -->
+        <section class="relative bg-surface-container-lowest rounded-xl p-space-md shadow-[0_8px_24px_-4px_rgba(31,36,33,0.06),0_2px_6px_-1px_rgba(31,36,33,0.02)] overflow-hidden">
+          <div class="flex items-start gap-space-md">
+            <div class="relative flex-shrink-0 w-14 h-14 rounded-full bg-primary-container flex items-center justify-center shadow-md">
+              <div class="absolute inset-0 rounded-full bg-secondary-container/20 animate-ping opacity-60"></div>
+              <span class="material-symbols-outlined text-[28px] text-secondary-container" style="font-variation-settings:'FILL' 1;">mic</span>
+            </div>
+            <div class="flex flex-col flex-grow min-w-0">
+              <div class="flex items-center justify-between">
+                <h3 class="text-title-md text-primary">تسجيل الحكاية بصوتك</h3>
+                <span class="px-2 py-0.5 rounded-full bg-surface-container text-primary text-label-sm">موصى به</span>
+              </div>
+              <p class="text-body-sm text-on-surface-variant mt-1 leading-relaxed">تحدث بعفويتك، وسنحوّل نبراتك وحكايتك إلى مشاهد متناسقة وحوارات دافئة تحفظ روح العائلة.</p>
+            </div>
+          </div>
+          <div class="mt-space-md p-space-sm bg-surface-container-low rounded-lg flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <button aria-label="تجربة الصوت" class="w-9 h-9 rounded-full bg-secondary-container text-on-secondary flex items-center justify-center shadow-sm transition-transform active:scale-95" id="test-mic-toggle">
+                <span class="material-symbols-outlined text-[20px]" id="test-mic-icon">graphic_eq</span>
+              </button>
+              <span class="text-label-sm text-on-surface-variant">نقاء الصوت ممتاز</span>
+            </div>
+            <div class="flex items-center gap-1 h-6 flex-grow max-w-[130px] justify-end" id="waveform-container">
+              <span class="w-1 bg-secondary-container rounded-full h-2 transition-all duration-300"></span>
+              <span class="w-1 bg-secondary-container rounded-full h-4 transition-all duration-300"></span>
+              <span class="w-1 bg-secondary-container rounded-full h-5 transition-all duration-300"></span>
+              <span class="w-1 bg-secondary-container rounded-full h-3 transition-all duration-300"></span>
+              <span class="w-1 bg-secondary-container rounded-full h-6 transition-all duration-300"></span>
+              <span class="w-1 bg-secondary-container rounded-full h-4 transition-all duration-300"></span>
+              <span class="w-1 bg-secondary-container rounded-full h-2 transition-all duration-300"></span>
+              <span class="w-1 bg-secondary-container rounded-full h-3 transition-all duration-300"></span>
+            </div>
+          </div>
+          <button data-nav="story-review" class="w-full mt-space-md h-[52px] rounded-full bg-primary-container text-on-primary text-title-md flex items-center justify-center gap-2 shadow-[0_6px_18px_rgba(27,59,54,0.18)] transition-transform active:scale-[0.98]">
+            <span class="material-symbols-outlined text-[22px]">mic</span>
+            <span>بدء التسجيل الآن</span>
+          </button>
+        </section>
+
+        <!-- Written card -->
+        <section class="relative bg-surface-container-lowest rounded-xl p-space-md shadow-[0_8px_24px_-4px_rgba(31,36,33,0.06),0_2px_6px_-1px_rgba(31,36,33,0.02)] overflow-hidden">
+          <div class="flex items-start gap-space-md">
+            <div class="flex-shrink-0 w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center text-primary shadow-inner">
+              <span class="material-symbols-outlined text-[26px]">edit_note</span>
+            </div>
+            <div class="flex flex-col flex-grow min-w-0">
+              <h3 class="text-title-md text-primary">كتابة الذكرى باليد</h3>
+              <p class="text-body-sm text-on-surface-variant mt-1 leading-relaxed">اكتب موقفاً طريفاً، أو حكمة عائلية، أو لحظة دافئة لا تود نسيانها، ودع الكلمات تنساب على الورق الرقمي.</p>
+            </div>
+          </div>
+          <button data-nav="story-review" class="w-full mt-space-md h-[50px] rounded-full bg-surface-container text-primary text-label-md flex items-center justify-center gap-2 transition-colors hover:bg-surface-container-high active:scale-[0.98]">
+            <span class="material-symbols-outlined text-[20px]">history_edu</span>
+            <span>فتح صفحة فارغة للتدوين</span>
+          </button>
+        </section>
+
+        <!-- Prompts -->
+        <section class="bg-surface-container-low rounded-xl p-space-md flex flex-col gap-space-sm">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[20px] text-secondary">lightbulb</span>
+              <h4 class="text-title-md text-primary">أفكار تلهمك اليوم</h4>
+            </div>
+            <span class="text-label-sm text-on-surface-variant">اختر موضوعاً</span>
+          </div>
+          <div class="flex flex-wrap gap-2 pt-1">
+            <button class="prompt-chip px-space-sm py-2 rounded-full bg-surface-container-lowest text-on-surface text-body-sm shadow-sm transition-all active:scale-95">🎒 أول يوم في المدرسة</button>
+            <button class="prompt-chip px-space-sm py-2 rounded-full bg-surface-container-lowest text-on-surface text-body-sm shadow-sm transition-all active:scale-95">🏕️ رحلة التخييم بالبر</button>
+            <button class="prompt-chip px-space-sm py-2 rounded-full bg-surface-container-lowest text-on-surface text-body-sm shadow-sm transition-all active:scale-95">🥮 كعكة العيد مع الجدة</button>
+            <button class="prompt-chip px-space-sm py-2 rounded-full bg-surface-container-lowest text-on-surface text-body-sm shadow-sm transition-all active:scale-95">🌧️ مطر الشتاء في الحي القديم</button>
+          </div>
+        </section>
+
+        <!-- Privacy banner -->
+        <footer class="bg-surface-container-high rounded-xl p-space-md flex items-center gap-space-sm">
+          <div class="w-10 h-10 rounded-full bg-surface-container-lowest flex items-center justify-center flex-shrink-0 text-primary shadow-sm">
+            <span class="material-symbols-outlined text-[20px]">shield</span>
+          </div>
+          <div class="flex flex-col">
+            <div class="flex items-center gap-1 text-primary">
+              <span class="text-label-md font-semibold">حرمة عائلية مصونة</span>
+              <span class="text-label-sm">🔒</span>
+            </div>
+            <p class="text-body-sm text-on-surface-variant leading-normal">ذكرياتك مشفرة وخاصة بعائلتك وحدها، لا يطّلع عليها سواكم، ويمكنك حذف أو تصدير أي محتوى في أي لحظة.</p>
+          </div>
+        </footer>
+      </div>
+    </main>
+    <div data-navbar></div>
+  </section>
+
+  <!-- ============================ PLACEHOLDER SCREENS (built next) ============================ -->
+  <section class="screen" data-screen="family-archive"><div data-stub="أرشيف العائلة"></div><div data-navbar></div></section>
+  <!-- ============================ SCREEN: FAMILY CHARACTERS (4) ============================ -->
+  <section class="screen" data-screen="family-characters">
+    <header class="sticky top-0 z-40 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.03)]">
+      <div class="h-16 px-margin flex items-center justify-between">
+        <div class="flex items-center gap-space-sm">
+          <div class="w-9 h-9 rounded-full bg-primary-container flex items-center justify-center text-secondary-container shadow-[0_2px_6px_rgba(31,36,33,0.08)]">
+            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings:'FILL' 1;">diversity_1</span>
+          </div>
+          <div class="flex flex-col">
+            <div class="flex items-center gap-1.5">
+              <h1 class="text-title-md text-primary">حكايات العائلة</h1>
+              <span class="text-on-surface-variant text-label-sm">•</span>
+              <span class="text-label-sm text-on-surface-variant font-medium">شخصياتنا</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+              <span class="text-label-sm text-on-surface-variant">أرشيف خاص ومحمي 🔒</span>
+            </div>
+          </div>
+        </div>
+        <button class="w-11 h-11 rounded-full flex items-center justify-center text-primary hover:bg-surface-container-low transition-colors">
+          <span class="material-symbols-outlined text-[22px]">favorite</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="flex flex-col relative w-full px-margin pt-space-md pb-28 flex-grow">
+      <section class="flex flex-col gap-space-xs mb-space-md">
+        <div class="inline-flex items-center gap-1.5 self-start px-space-sm py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed">
+          <span class="material-symbols-outlined text-[16px]" style="font-variation-settings:'FILL' 1;">family_restroom</span>
+          <span class="text-label-sm font-semibold">أبطال الحكاية التوثيقية</span>
+        </div>
+        <h2 class="text-headline-lg-mobile text-primary tracking-tight">من هم أبطال هذه الذكرى؟</h2>
+        <p class="text-body-sm text-on-surface-variant leading-relaxed">نحافظ على الملامح والأعمار المقاربة للواقع برسم هادئ وآمن يحمي خصوصيتهم وينقل دفء اللحظة لأجيالكم.</p>
+      </section>
+
+      <div class="grid grid-cols-1 gap-space-sm mb-space-md">
+        <!-- Baraa -->
+        <article class="relative bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm transition-transform active:scale-[0.99]">
+          <div class="flex items-start justify-between gap-space-sm">
+            <div class="flex items-center gap-space-sm">
+              <div class="relative w-16 h-16 rounded-xl overflow-hidden bg-surface-container-high shrink-0 shadow-sm">
+                <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUoMt6MiZ6G-rpmmo5IcrVUHb4eaVeE95_mXDmjx5WSreObZzmjWwje80eIA68zvtFzTQaNYlc3UmX4-o6lIYO8imOCngjjHtoDyhOY8QAX1JrNtSsZ9yPP0B_Q2HNa-h2LR1laqFqZiGn0s16N7oxBaNx6k2oHmayYYvdbonycYREe1uCSW4YED7fjYIccMBjjGYqLzpnkEIQCIJNzEmO4XLhg13_GP1gJHl2QP9pjp7egnWDUwqP"/>
+                <span class="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-full bg-surface-container-lowest/90 text-[10px] text-primary font-bold shadow">٧ سنوات</span>
+              </div>
+              <div class="flex flex-col min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <h3 class="text-title-md text-primary font-semibold truncate">براء</h3>
+                  <span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-label-sm">الابن</span>
+                </div>
+                <p class="text-label-md text-secondary font-medium">البطل الفضولي والمبتسم</p>
+                <p class="text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">شعر بني قصير، يرتدي كنزة خضراء مفضلة</p>
+              </div>
+            </div>
+            <button aria-label="تعديل تفاصيل براء" class="w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors shrink-0">
+              <span class="material-symbols-outlined text-[18px]">edit</span>
+            </button>
+          </div>
+          <div class="flex items-center justify-between pt-2 text-on-surface-variant">
+            <div class="flex items-center gap-1 text-primary">
+              <span class="material-symbols-outlined text-[16px]" style="font-variation-settings:'FILL' 1;">verified</span>
+              <span class="text-label-sm font-medium">الهوية البصرية مكتملة</span>
+            </div>
+            <div class="flex items-center gap-1 text-on-surface-variant">
+              <span class="material-symbols-outlined text-[15px]">auto_awesome</span>
+              <span class="text-label-sm">٣ مشاهد مخصصة</span>
+            </div>
+          </div>
+        </article>
+        <!-- Sarah -->
+        <article class="relative bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm transition-transform active:scale-[0.99]">
+          <div class="flex items-start justify-between gap-space-sm">
+            <div class="flex items-center gap-space-sm">
+              <div class="relative w-16 h-16 rounded-xl overflow-hidden bg-surface-container-high shrink-0 shadow-sm">
+                <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCE-eQ0gLKDAEuwoVLK_Fc2lothFVHXwEagj12EUwj5P54lpbwQbA6cAWNMCC-X_DogtzRp9r0eT7PfviCIh0HYuI0mRt23T_9h4EW5BUj5ngXe8Pjn1w14mFhvXkPVNZa_pFslgabi-kLzztWJXF9YDmMgVDg3vEBYJXaM3dfMfJ4maYb5sMidnkWreVVgzLsSsLih2_hfhd6HwXu9sgTwQvEUvmY1mJ6pNFiBvk-bn2K3VxYoiqcA"/>
+                <span class="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-full bg-surface-container-lowest/90 text-[10px] text-primary font-bold shadow">في الثلاثينات</span>
+              </div>
+              <div class="flex flex-col min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <h3 class="text-title-md text-primary font-semibold truncate">سارة</h3>
+                  <span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-label-sm">الأم</span>
+                </div>
+                <p class="text-label-md text-secondary font-medium">الراعية الحنونة وسند الحكاية</p>
+                <p class="text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">ملامح مطمئنة وطابع وقور دافئ</p>
+              </div>
+            </div>
+            <button aria-label="تعديل تفاصيل سارة" class="w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors shrink-0">
+              <span class="material-symbols-outlined text-[18px]">edit</span>
+            </button>
+          </div>
+          <div class="flex items-center justify-between pt-2 text-on-surface-variant">
+            <div class="flex items-center gap-1 text-primary">
+              <span class="material-symbols-outlined text-[16px]" style="font-variation-settings:'FILL' 1;">verified</span>
+              <span class="text-label-sm font-medium">الهوية البصرية مكتملة</span>
+            </div>
+            <div class="flex items-center gap-1 text-on-surface-variant">
+              <span class="material-symbols-outlined text-[15px]">menu_book</span>
+              <span class="text-label-sm">حاضرة في المشهد الأول</span>
+            </div>
+          </div>
+        </article>
+        <!-- Father / Narrator -->
+        <article class="relative bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm transition-transform active:scale-[0.99]">
+          <div class="flex items-start justify-between gap-space-sm">
+            <div class="flex items-center gap-space-sm">
+              <div class="relative w-16 h-16 rounded-xl overflow-hidden bg-surface-container-high shrink-0 shadow-sm">
+                <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkhv2kMSdvcRSOuv4IGELfsFD4cWEhcRbcWZovoGr6vnL02sp6zEOHcJ8ds4xmUVnzI7iYJS07Hpy-kKb91RLQL_6M5Hf_PvcShqcs5bZmZc8X1_6Vik5cHsQZRl8mSU9GUdcHTlewS-6fU55h7ptO_WbiM9eC4A6HD3uHpHQLm4d6kdKMonK2Nwvu2N_iNz2Sd3MONuhBU_PsU24AxGcB_NHJGaYerZrAvbSgZrehpnS9y-KcRmkc"/>
+                <span class="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container text-[10px] font-bold shadow">صوت الحكاية</span>
+              </div>
+              <div class="flex flex-col min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <h3 class="text-title-md text-primary font-semibold truncate">أنا</h3>
+                  <span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-label-sm">الأب / الراوي</span>
+                </div>
+                <p class="text-label-md text-secondary font-medium">مسجل الصوت والراوي الرئيسي</p>
+                <div class="flex items-center gap-1.5 mt-0.5">
+                  <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+                  <span class="text-body-sm text-on-surface-variant truncate">تم ربط نبرة الصوت الأبوية بنجاح</span>
+                </div>
+              </div>
+            </div>
+            <button aria-label="تعديل تفاصيل الأب" class="w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors shrink-0">
+              <span class="material-symbols-outlined text-[18px]">mic</span>
+            </button>
+          </div>
+          <div class="flex items-center justify-between pt-2 text-on-surface-variant">
+            <div class="flex items-center gap-1 text-secondary">
+              <span class="material-symbols-outlined text-[16px]">graphic_eq</span>
+              <span class="text-label-sm font-semibold">بصمة صوتية مُعتمدة (دقيقة و٤٠ ثانية)</span>
+            </div>
+            <span class="text-label-sm text-on-surface-variant">الراوي الرئيسي</span>
+          </div>
+        </article>
+      </div>
+
+      <button class="w-full py-3.5 px-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex items-center justify-center gap-2 text-primary text-label-md font-semibold mb-space-lg active:scale-[0.98]" id="add-hero-btn">
+        <div class="w-7 h-7 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary shadow">
+          <span class="material-symbols-outlined text-[18px]">person_add</span>
+        </div>
+        <span>+ إضافة فرد من العائلة إلى القصة</span>
+      </button>
+
+      <section class="bg-surface-container-low rounded-xl p-space-md flex flex-col gap-space-sm mb-space-lg">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px] text-secondary" style="font-variation-settings:'FILL' 1;">palette</span>
+          <h3 class="text-title-md text-primary font-semibold">معايير مطابقة الرسم والتجسيد</h3>
+        </div>
+        <p class="text-body-sm text-on-surface-variant">ضوابط ذكية لضمان تناغم أسلوب الرسوم وتوثيق مظهر العائلة بكل وقار.</p>
+        <div class="flex flex-col gap-2.5 mt-1">
+          <label class="flex items-start gap-space-sm p-space-sm rounded-xl bg-surface-container-lowest cursor-pointer transition-colors hover:bg-surface-bright">
+            <input checked class="mt-1 w-5 h-5 rounded-full accent-primary shrink-0 cursor-pointer" type="checkbox"/>
+            <div class="flex flex-col min-w-0">
+              <span class="text-label-md text-primary font-semibold">محافظة تامة على الحشمة والملامح العائلية</span>
+              <span class="text-body-sm text-on-surface-variant">رسم ملامح تقريبية ناعمة تحاكي الواقع وتمنع التشويه البصري أو كشف الخصوصيات الدقيقة.</span>
+            </div>
+          </label>
+          <label class="flex items-start gap-space-sm p-space-sm rounded-xl bg-surface-container-lowest cursor-pointer transition-colors hover:bg-surface-bright">
+            <input checked class="mt-1 w-5 h-5 rounded-full accent-primary shrink-0 cursor-pointer" type="checkbox"/>
+            <div class="flex flex-col min-w-0">
+              <span class="text-label-md text-primary font-semibold">تفعيل مظهر الذكرى الكلاسيكي</span>
+              <span class="text-body-sm text-on-surface-variant">إضفاء لمسات الدفء الحنيني وألوان الأوراق العتيقة وطبقات الألوان المائية الأنيقة.</span>
+            </div>
+          </label>
+        </div>
+      </section>
+
+      <div class="flex flex-col gap-space-xs">
+        <button data-nav="art-style" class="w-full h-[52px] rounded-full bg-primary-container text-on-primary text-label-md font-semibold flex items-center justify-center gap-2 shadow-md hover:bg-primary active:scale-[0.98] transition-all">
+          <span>متابعة لاختيار طابع المشاهد</span>
+          <span class="material-symbols-outlined text-[20px] rotate-180">arrow_back</span>
+        </button>
+        <p class="text-center text-label-sm text-on-surface-variant mt-1">يمكنك تعديل أي شخصية أو استبدال الرسوم في أي خطوة لاحقة.</p>
+      </div>
+    </main>
+    <div data-navbar></div>
+  </section>
+
+  <section class="screen" data-screen="art-style"><div data-stub="الطابع البصري"></div></section>
+  <section class="screen" data-screen="privacy-safety"><div data-stub="الأمان والخصوصية"></div><div data-navbar></div></section>
+  <!-- ============================ SCREEN: STORY REVIEW (3) ============================ -->
+  <section class="screen" data-screen="story-review">
+    <header class="sticky top-0 z-40 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.03)]">
+      <div class="h-16 px-margin flex items-center justify-between">
+        <div class="flex items-center gap-space-sm">
+          <button data-nav="start-story" aria-label="رجوع" class="w-11 h-11 rounded-full flex items-center justify-center text-primary hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined text-[24px]">arrow_forward</span>
+          </button>
+          <div class="flex flex-col">
+            <h1 class="text-title-md text-primary">مراجعة الحكاية</h1>
+            <span class="text-label-sm text-on-surface-variant">استوديو حكايات العائلة</span>
+          </div>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-secondary-container shadow-[0_2px_6px_rgba(31,36,33,0.08)]">
+          <span class="material-symbols-outlined text-[18px]" style="font-variation-settings:'FILL' 1;">auto_stories</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex flex-col relative w-full px-margin pt-space-md pb-8 flex-grow">
+      <!-- Status badge -->
+      <div class="inline-flex items-center self-start gap-space-xs px-3 py-1.5 rounded-full bg-surface-container-high text-primary mb-3 shadow-sm">
+        <span class="material-symbols-outlined text-[18px] text-secondary">mic</span>
+        <span class="text-label-sm font-semibold">تم تحويل تسجيلك الصوتي بنجاح (١ دقيقة و٤٢ ثانية)</span>
+      </div>
+      <!-- Header -->
+      <div class="flex flex-col gap-1 mb-5">
+        <h2 class="text-headline-lg-mobile text-primary">راجع الحكاية قبل تحويلها لمشاهد</h2>
+        <p class="text-body-sm text-on-surface-variant">يمكنك تعديل أي كلمة أو إضافة تفاصيل عائلية خاصة لا يعرفها سوانا.</p>
+      </div>
+      <!-- Audio player -->
+      <div class="w-full bg-surface-container-lowest rounded-xl p-3 mb-4 shadow-sm flex items-center justify-between gap-space-sm">
+        <div class="flex items-center gap-space-sm">
+          <button aria-label="تشغيل التسجيل" class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-md active:scale-95 transition-transform" id="audio-play-toggle">
+            <span class="material-symbols-outlined text-[20px]" id="play-icon" style="font-variation-settings:'FILL' 1;">play_arrow</span>
+          </button>
+          <div class="flex flex-col">
+            <div class="flex items-center gap-1.5">
+              <span class="text-label-md text-primary font-semibold">التسجيل الأصلي</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+            </div>
+            <span class="text-label-sm text-on-surface-variant" id="player-time">00:48 / 01:42</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-[3px] h-7 px-2 bg-surface-container-low rounded-lg">
+          <span class="w-1 h-3 rounded-full bg-secondary"></span><span class="w-1 h-5 rounded-full bg-secondary"></span>
+          <span class="w-1 h-2 rounded-full bg-secondary"></span><span class="w-1 h-6 rounded-full bg-secondary"></span>
+          <span class="w-1 h-4 rounded-full bg-secondary"></span><span class="w-1 h-5 rounded-full bg-secondary"></span>
+          <span class="w-1 h-2 rounded-full bg-outline-variant"></span><span class="w-1 h-4 rounded-full bg-outline-variant"></span>
+          <span class="w-1 h-3 rounded-full bg-outline-variant"></span><span class="w-1 h-6 rounded-full bg-outline-variant"></span>
+          <span class="w-1 h-2 rounded-full bg-outline-variant"></span><span class="w-1 h-4 rounded-full bg-outline-variant"></span>
+        </div>
+      </div>
+      <!-- Story text -->
+      <div class="w-full bg-surface-container-lowest rounded-xl p-4 shadow-sm relative flex flex-col mb-4">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-secondary text-[20px]" style="font-variation-settings:'FILL' 1;">menu_book</span>
+            <span class="text-label-sm text-on-surface-variant font-semibold">مسودة الحكاية النصية</span>
+          </div>
+          <div class="flex items-center gap-1 text-on-surface-variant text-label-sm bg-surface-container-low px-2 py-0.5 rounded-full">
+            <span class="material-symbols-outlined text-[14px]">history_edu</span>
+            <span id="char-counter">٣٦ كلمة</span>
+          </div>
+        </div>
+        <div aria-label="محرر نص الحكاية" class="w-full text-body-lg text-primary leading-relaxed focus:outline-none min-h-[160px] bg-transparent whitespace-pre-line text-right" contenteditable="true" id="story-editor">في عصر يوم الجمعة الماضي، قررنا أنا وسارة وبراء الذهاب في نزهة إلى الحديقة القديمة... كان براء يحمل طائرته الورقية الزرقاء التي صنعها مع جده، وفجأة هبت رياح قوية علقت الطائرة بأعلى غصن... بدلاً من أن يحزن، ضحك براء وقال: الآن الطيور ستلعب بها معنا يا أبي!</div>
+        <div class="hidden mt-3 p-3 rounded-lg bg-surface-container-low flex items-center justify-between" id="ai-rewrite-banner">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-secondary text-[20px]">magic_button</span>
+            <span class="text-label-sm text-primary">تم تطبيق لمسة أدبية دافئة ومشاعر أعمق</span>
+          </div>
+          <button class="text-secondary text-label-sm font-semibold hover:underline" id="undo-rewrite">تراجع</button>
+        </div>
+      </div>
+      <!-- Enhancement actions -->
+      <div class="flex items-center gap-space-sm mb-5">
+        <button class="flex-1 py-2.5 px-3 rounded-full bg-surface-container-high text-primary text-label-md flex items-center justify-center gap-1.5 active:scale-95 transition-transform shadow-sm" id="btn-rewrite">
+          <span class="material-symbols-outlined text-[18px] text-secondary">auto_fix_high</span>
+          <span>إعادة صياغة أدبية دافئة</span>
+        </button>
+        <button class="py-2.5 px-4 rounded-full bg-surface-container-high text-primary text-label-md flex items-center justify-center gap-1 active:scale-95 transition-transform shadow-sm" id="btn-add-scene">
+          <span class="material-symbols-outlined text-[18px]">add_circle</span>
+          <span>مشهد جديد</span>
+        </button>
+      </div>
+      <!-- Scene previews -->
+      <div class="grid grid-cols-2 gap-space-sm mb-6">
+        <div class="p-3 bg-surface-container-lowest rounded-xl shadow-sm flex flex-col gap-2">
+          <div class="w-full h-24 rounded-lg overflow-hidden relative">
+            <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbcn1isQ4XCndoRl06digbO_qwNB558UmfdMppQ8Moo5TpP-08dfdJE0xqq7ql363f9K3uc-SsTdcRRSwFcaGzr0jSTlteYhIXobNIA21NDr8VcBJTCiDXeBQRT1icFjyyeCFnXwC8o7QEGuKTJqe-1LEEWlO5oGqPW32flLxK1xgWhqPkbhy-Scg-CuHF6-g4PuxrOh7Ha56PsJpEoYJDj3gM5-idvUu5dH7deMpOiN0HIZCiHxkp"/>
+            <span class="absolute bottom-1.5 right-1.5 bg-primary-container/85 text-on-primary text-label-sm px-2 py-0.5 rounded-full">المشهد الأول</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-label-md text-primary font-semibold">الحديقة القديمة</span>
+            <span class="text-body-sm text-on-surface-variant">انطلاق الطائرة الزرقاء</span>
+          </div>
+        </div>
+        <div class="p-3 bg-surface-container-lowest rounded-xl shadow-sm flex flex-col gap-2">
+          <div class="w-full h-24 rounded-lg overflow-hidden relative">
+            <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB71tEhvF1GhN_hPyXkEE1mPuzIdlGmovk5Wup7lmppkGtOL2WV9PgF0kV2kWF6OP_QBKnKKiCpXWkZHCc4n9oG8nTlZ_ORKQwGeWkqNqYdUhWY4p98xC84kbDglXRA4us88mESkNy8OPo2KvXV3mt9pKBlJijnAWmBSoGNVp_-WMDcm5-2KHfI96RzlI3HuBgpZARcwfnNuODFoNK_GU4-1Pe2oFDTOTGFBamE5qO1eSDEGFdsWhu2"/>
+            <span class="absolute bottom-1.5 right-1.5 bg-primary-container/85 text-on-primary text-label-sm px-2 py-0.5 rounded-full">المشهد الثاني</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-label-md text-primary font-semibold">ضحكة براء</span>
+            <span class="text-body-sm text-on-surface-variant">الطيور تلعب معنا</span>
+          </div>
+        </div>
+      </div>
+      <!-- Actions -->
+      <div class="flex flex-col gap-2.5 mb-5">
+        <button data-nav="family-characters" class="w-full h-[52px] rounded-full bg-primary-container text-on-primary text-title-md flex items-center justify-center gap-2 shadow-md active:scale-[0.98] transition-transform">
+          <span>اعتماد النص واختيار الأبطال</span>
+          <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+        </button>
+        <button data-nav="family-archive" class="w-full h-[46px] rounded-full bg-surface-container-high text-primary text-label-md flex items-center justify-center gap-2 active:scale-[0.98] transition-transform">
+          <span class="material-symbols-outlined text-[18px]">bookmark_add</span>
+          <span>حفظ كمسودة في الأرشيف</span>
+        </button>
+      </div>
+      <!-- Privacy strip -->
+      <div class="w-full bg-surface-container-low rounded-xl p-3 flex items-center gap-space-sm mb-2">
+        <div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-primary text-[18px]">verified_user</span>
+        </div>
+        <p class="text-label-sm text-on-surface-variant leading-snug">خصوصيتكم أمانة: لن نستخدم صوتك إلا لراوي هذه القصة وبموافقتك التامة.</p>
+      </div>
+    </main>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  // ---- Bottom navigation (shared) ----
+  const NAV = [
+    {path:"start-story",     icon:"auto_stories", label:"بدء حكاية"},
+    {path:"family-archive",  icon:"photo_album",  label:"أرشيف العائلة"},
+    {path:"family-characters",icon:"diversity_1", label:"شخصياتنا"},
+    {path:"privacy-safety",  icon:"lock",         label:"الأمان"},
+  ];
+  function navbarHTML(active){
+    return '<nav class="sticky bottom-0 z-40 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-4px_20px_rgba(31,36,33,0.04)]">'
+      +'<div class="flex items-center justify-around h-16 px-space-xs">'
+      + NAV.map(n=>{
+          const on = n.path===active;
+          return '<a data-nav="'+n.path+'" class="flex flex-col items-center justify-center min-w-[44px] flex-1 py-1 cursor-pointer transition-colors '
+            +(on?'text-primary font-semibold':'text-on-surface-variant')+'">'
+            +'<span class="material-symbols-outlined text-[24px]"'+(on?' style="font-variation-settings:\'FILL\' 1;"':'')+'>'+n.icon+'</span>'
+            +'<span class="text-label-sm mt-0.5">'+n.label+'</span></a>';
+        }).join('')
+      +'</div></nav>';
+  }
+  function stubHTML(title){
+    return '<header class="sticky top-0 z-40 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.03)]">'
+      +'<div class="h-16 px-margin flex items-center gap-2"><h1 class="text-title-md text-primary">'+title+'</h1></div></header>'
+      +'<main class="flex-grow flex flex-col items-center justify-center gap-3 text-center px-margin">'
+      +'<span class="material-symbols-outlined text-[48px] text-outline-variant">construction</span>'
+      +'<p class="text-body-md text-on-surface-variant">هذه الشاشة سنبنيها في الخطوة التالية.</p>'
+      +'<button data-nav="start-story" class="mt-2 px-5 h-11 rounded-full bg-surface-container text-primary text-label-md">↩︎ الرجوع للرئيسية</button></main>';
+  }
+
+  // Inject navbars + stubs
+  document.querySelectorAll('[data-navbar]').forEach(el=>{
+    const scr = el.closest('.screen').dataset.screen;
+    el.outerHTML = navbarHTML(scr);
+  });
+  document.querySelectorAll('[data-stub]').forEach(el=>{ el.outerHTML = stubHTML(el.dataset.stub); });
+
+  // ---- Router ----
+  function go(path){
+    const target = document.querySelector('.screen[data-screen="'+path+'"]');
+    if(!target) return;
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    target.classList.add('active');
+    document.getElementById('app').scrollTop = 0;
+    window.scrollTo(0,0);
+  }
+  document.addEventListener('click', e=>{
+    const t = e.target.closest('[data-nav]');
+    if(t){ e.preventDefault(); go(t.dataset.nav); }
+  });
+
+  // ---- Home: waveform + chips ----
+  const waveContainer=document.getElementById('waveform-container');
+  const toggleBtn=document.getElementById('test-mic-toggle');
+  const micIcon=document.getElementById('test-mic-icon');
+  if(waveContainer&&toggleBtn){
+    const bars=waveContainer.querySelectorAll('span'); let on=false,id=null;
+    toggleBtn.addEventListener('click',()=>{
+      on=!on;
+      if(on){micIcon.textContent='pause';id=setInterval(()=>bars.forEach(b=>b.style.height=(Math.floor(Math.random()*20)+6)+'px'),150);}
+      else{micIcon.textContent='graphic_eq';clearInterval(id);bars.forEach((b,i)=>b.style.height=((i%3+2)*4)+'px');}
+    });
+  }
+  document.querySelectorAll('.prompt-chip').forEach(chip=>{
+    chip.addEventListener('click',()=>{
+      document.querySelectorAll('.prompt-chip').forEach(c=>c.classList.remove('bg-secondary-container','text-on-secondary'));
+      document.querySelectorAll('.prompt-chip').forEach(c=>c.classList.add('bg-surface-container-lowest','text-on-surface'));
+      chip.classList.remove('bg-surface-container-lowest','text-on-surface');
+      chip.classList.add('bg-secondary-container','text-on-secondary');
+    });
+  });
+
+  // ---- Screen 3: Story review ----
+  const playBtn=document.getElementById('audio-play-toggle');
+  const playIcon=document.getElementById('play-icon');
+  const playerTime=document.getElementById('player-time');
+  if(playBtn){
+    let playing=false;
+    playBtn.addEventListener('click',()=>{
+      playing=!playing;
+      playIcon.textContent=playing?'pause':'play_arrow';
+      playerTime.textContent=playing?'01:14 / 01:42':'00:48 / 01:42';
+    });
+  }
+  const storyEditor=document.getElementById('story-editor');
+  const btnRewrite=document.getElementById('btn-rewrite');
+  const aiBanner=document.getElementById('ai-rewrite-banner');
+  const undoRewrite=document.getElementById('undo-rewrite');
+  const charCounter=document.getElementById('char-counter');
+  const originalText='في عصر يوم الجمعة الماضي، قررنا أنا وسارة وبراء الذهاب في نزهة إلى الحديقة القديمة... كان براء يحمل طائرته الورقية الزرقاء التي صنعها مع جده، وفجأة هبت رياح قوية علقت الطائرة بأعلى غصن... بدلاً من أن يحزن، ضحك براء وقال: الآن الطيور ستلعب بها معنا يا أبي!';
+  const enrichedText='في ذلك العصر الدافئ من يوم الجمعة، حين كانت شمس الأصيل ترخي خيوطها الذهبية، انطلقنا أنا ورفيقة دربي سارة وصغيرنا براء نحو الحديقة القديمة... كانت يداه الصغيرتان تلتفان بفخر حول طائرته الورقية ذات الزرقة السماوية، تلك التي نسج تفاصيلها محبةً مع جده الحبيب. وما إن استقرت الطائرة بين أحضان الرياح، حتى داعبها نسيم مفاجئ وعانق بها أعلى غصن شجرة عتيقة... لم تدمع عيناه، بل انبلجت أساريره عن ضحكة صافية زلزلت قلبي وقال: «لا تقلق يا أبي، الآن أهدَينا الطيور لعبتنا لتفرح بها معنا!»';
+  if(btnRewrite){
+    btnRewrite.addEventListener('click',()=>{ storyEditor.innerText=enrichedText; aiBanner.classList.remove('hidden'); charCounter.textContent='٦٨ كلمة'; });
+    undoRewrite.addEventListener('click',()=>{ storyEditor.innerText=originalText; aiBanner.classList.add('hidden'); charCounter.textContent='٣٦ كلمة'; });
+  }
+  const addSceneBtn=document.getElementById('btn-add-scene');
+  if(addSceneBtn){ addSceneBtn.addEventListener('click',()=>{ storyEditor.focus(); storyEditor.innerText+='\n\nالمشهد التالي: وجلسنا تحت تلك الشجرة نتناول الشاي الدافئ...'; }); }
+
+  // ---- Screen 4: Characters (add member toast) ----
+  document.getElementById('add-hero-btn')?.addEventListener('click',function(){
+    const t=document.createElement('div');
+    t.className='fixed bottom-24 left-1/2 -translate-x-1/2 px-4 py-2.5 rounded-full bg-primary text-on-primary text-label-sm shadow-xl flex items-center gap-2 z-50 transition-all duration-300';
+    t.innerHTML='<span class="material-symbols-outlined text-[18px]">family_star</span><span>جاري فتح ألبوم العائلة لاختيار بطل جديد...</span>';
+    document.body.appendChild(t);
+    setTimeout(()=>{ t.classList.add('opacity-0','translate-y-2'); setTimeout(()=>t.remove(),300); },2200);
+  });
+})();
+</script>
+</body>
+</html>
