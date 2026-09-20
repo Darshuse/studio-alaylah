@@ -117,8 +117,8 @@ public class SceneGenerationService {
                 sc.setCaption(desc.length() > 120 ? desc.substring(0, 120) : desc); // العربي للعرض
                 sc = scenes.save(sc);
 
-                // ترجمة الوصف للإنجليزية + تركيب لقطة واسعة لدقّة أعلى
-                String descEn = translation.toEnglish(desc);
+                // وصف بصري إنجليزي دقيق للمشهد (LLM يتحمّل العامية + تكوين أدق من الترجمة الحرفية)
+                String descEn = translation.toScenePrompt(desc);
                 // المرساة أولًا: البطل ثابت في كل مشهد، ثم حدث المشهد الحالي
                 String anchor = hasRefs
                     ? "The main character is the person shown in the reference image — keep the same face, age and appearance. "

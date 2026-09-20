@@ -32,13 +32,16 @@ public class TogetherImageProvider implements ImageProvider {
     private final ObjectMapper mapper = new ObjectMapper();
     private final String key;
     private final String model;
+    private final String editModel;
     private final int steps;
 
     public TogetherImageProvider(@Value("${image.together.key:}") String key,
                                  @Value("${image.together.model:black-forest-labs/FLUX.2-flex}") String model,
+                                 @Value("${image.together.edit-model:black-forest-labs/FLUX.1-kontext-pro}") String editModel,
                                  @Value("${image.together.steps:20}") int steps) {
         this.key = key;
         this.model = model;
+        this.editModel = editModel;
         this.steps = steps;
     }
 
@@ -67,14 +70,28 @@ public class TogetherImageProvider implements ImageProvider {
         return send(body);
     }
 
-    /** تحويل صورة الطفل الحقيقية → شخصية كرتونية بأسلوب القصة (image-to-image عبر image_url). */
+    /**
+     * تحويل صورة الشخص الحقيقية → شخصية كرتونية عالية الشبه.
+     * يستخدم FLUX.1-Kontext (مصمّم للحفاظ على هوية الوش عند تغيير الأسلوب) بدل flex → شبه أعلى.
+     */
     @Override
     public byte[] editToAvatar(String prompt, byte[] photo, String photoContentType) throws Exception {
         requireKey();
         if (photo == null || photo.length == 0) throw new IllegalArgumentException("لا توجد صورة للتحويل");
-        ObjectNode body = baseBody(prompt, 1024, 1024);
-        body.put("image_url", dataUri(photo));
-        return send(body);
+        String uri = dataUri(photo);
+        // 1) نحاول Kontext (شبه أعلى) — يتطلّب رصيد Together
+        try {
+            ObjectNode body = mapper.createObjectNode();
+            body.put("model", editModel);
+            body.put("prompt", prompt);
+            body.put("image_url", uri);
+            return send(body);
+        } catch (Exception kontextErr) {
+            // 2) fallback: FLUX.2-flex image-editing (يعمل بلا رصيد إضافي، شبه جيد)
+            ObjectNode body = baseBody(prompt, 1024, 1024);
+            body.put("image_url", uri);
+            return send(body);
+        }
     }
 
     private void requireKey() {

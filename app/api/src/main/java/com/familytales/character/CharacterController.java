@@ -28,10 +28,11 @@ public class CharacterController {
         // ندمج الاسم مع وصف السن (اسم مثل «أبو محمد»/«أم أحمد» يدلّ على الدور والنوع)
         String hint = (c.getAgeLabel() == null ? "" : c.getAgeLabel()) + " " + (c.getDisplayName() == null ? "" : c.getDisplayName());
         String subject = ageSubject(hint);
-        return "Warm watercolor children's storybook cartoon character portrait of THIS SAME " + subject + ". "
-            + "Closely match the reference photo: same face, real age, hairstyle, facial hair/beard if present, "
-            + "eye color, skin tone and overall appearance — do NOT make them look younger or older. "
-            + "Warm friendly expression, soft golden light, plain background, tasteful and modest, no text, no watermark";
+        // مُحسّن لـ Kontext: «حوّل هذا الشخص بالذات» → حفاظ أقوى على هوية الوش
+        return "Turn this exact " + subject + " into a warm watercolor storybook cartoon character. "
+            + "Keep the identical face shape, features, eyes, nose, hairstyle, facial hair/beard if present, "
+            + "skin tone and real age — do NOT make them look younger or older, do NOT change their identity. "
+            + "Gentle friendly expression, soft golden light, plain background, tasteful and modest, no text, no watermark";
     }
 
     /** يستنتج نوع الشخص (بالغ رجل/سيدة أو طفل) من وصف السن/الدور العربي. */
