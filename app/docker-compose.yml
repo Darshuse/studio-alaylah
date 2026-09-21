@@ -15,15 +15,6 @@ services:
       timeout: 3s
       retries: 10
 
-  rabbitmq:
-    image: rabbitmq:3.13-management-alpine
-    environment:
-      RABBITMQ_DEFAULT_USER: familytales
-      RABBITMQ_DEFAULT_PASS: familytales
-    ports:
-      - "5672:5672"    # AMQP
-      - "15672:15672"  # لوحة الإدارة
-
   minio:
     image: quay.io/minio/minio:latest
     command: server /data --console-address ":9001"
