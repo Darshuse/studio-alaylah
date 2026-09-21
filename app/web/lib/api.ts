@@ -41,7 +41,8 @@ async function req(path: string, opts: RequestInit = {}) {
 
 export type Story = { id: string; title: string | null; displayTitle?: string | null; status: string; sourceKind: string; textApproved: boolean; text?: string | null; createdAt: string | null; hasFilm?: boolean; coverUrl?: string | null };
 export type AuthResponse = { token: string; userId: string; displayName: string | null; familyId: string };
-export type Me = { userId: string; email: string; displayName: string | null; familyId: string | null };
+export type Me = { userId: string; email: string; displayName: string | null; familyId: string | null; plan?: string; storyCredits?: number };
+export type Entitlement = { plan: string; storyCredits: number };
 
 export const api = {
   register: (b: { email: string; password: string; displayName?: string }): Promise<AuthResponse> =>
@@ -49,6 +50,10 @@ export const api = {
   login: (b: { email: string; password: string }): Promise<AuthResponse> =>
     req("/auth/login", { method: "POST", body: JSON.stringify(b) }),
   me: (): Promise<Me> => req("/me"),
+  entitlement: (): Promise<Entitlement> => req("/billing/entitlement"),
+  redeem: (credits: number): Promise<Entitlement> =>
+    req("/billing/redeem", { method: "POST", body: JSON.stringify({ credits }) }),
+  subscribe: (): Promise<Entitlement> => req("/billing/subscribe", { method: "POST" }),
   createStory: (b: { title?: string | null; sourceKind: string }): Promise<Story> =>
     req("/stories", { method: "POST", body: JSON.stringify(b) }),
   listStories: (): Promise<Story[]> => req("/stories"),

@@ -19,13 +19,17 @@ export default function HomePage() {
   const [recording, setRecording] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [name, setName] = useState<string | null>(getDisplayName());
+  const [plan, setPlan] = useState<string | null>(null);
+  const [credits, setCredits] = useState<number | null>(null);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // اسم المستخدم الحقيقي من الخادم (يتحقق من الجلسة أيضًا)
+  // اسم المستخدم الحقيقي + الاستحقاق من الخادم
   useEffect(() => {
     if (!getToken()) return;
     api.me().then((m) => {
       if (m.displayName) { setName(m.displayName); setSession(getToken()!, m.familyId || undefined, m.displayName); }
+      if (m.plan) setPlan(m.plan);
+      if (typeof m.storyCredits === "number") setCredits(m.storyCredits);
     }).catch(() => {});
   }, []);
 
@@ -84,9 +88,19 @@ export default function HomePage() {
       <main className="flex flex-col w-full px-margin pt-space-md pb-6 flex-grow gap-space-md">
         {/* Greeting */}
         <div className="flex flex-col gap-space-xs pt-space-xs">
-          <div className="inline-flex items-center gap-space-xs px-space-sm py-1 bg-surface-container-low rounded-full w-fit shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-secondary-container animate-pulse" />
-            <span className="text-[12px] text-on-surface-variant font-medium">دفتر الذكريات العائلي المفتوح</span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="inline-flex items-center gap-space-xs px-space-sm py-1 bg-surface-container-low rounded-full w-fit shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-secondary-container animate-pulse" />
+              <span className="text-[12px] text-on-surface-variant font-medium">دفتر الذكريات العائلي المفتوح</span>
+            </div>
+            {plan === "subscription" ? (
+              <div className="inline-flex items-center gap-1 px-space-sm py-1 bg-primary-container text-on-primary rounded-full w-fit shadow-sm"><Icon name="workspace_premium" size={14} fill /><span className="text-[12px] font-semibold">اشتراك مفعّل</span></div>
+            ) : credits !== null && (
+              <div className="inline-flex items-center gap-1 px-space-sm py-1 bg-secondary-fixed text-on-secondary-fixed rounded-full w-fit shadow-sm">
+                <Icon name={credits > 0 ? "redeem" : "lock"} size={14} fill />
+                <span className="text-[12px] font-semibold">{credits > 0 ? `${credits} قصة متاحة` : "اشحن للمتابعة"}</span>
+              </div>
+            )}
           </div>
           <h2 className="text-[22px] leading-[32px] font-semibold text-primary tracking-tight mt-1">{name ? `أهلاً يا ${name}، أي ذكرى نخلّدها اليوم؟` : "أهلاً بك، أي ذكرى نخلّدها اليوم؟"}</h2>
           <p className="text-[15px] leading-[24px] text-on-surface-variant">حكايتك بصوتك، وعائلتك أبطالها في كل مشهد. دع اللحظات تروى بصدق لتحفظها الأجيال.</p>
