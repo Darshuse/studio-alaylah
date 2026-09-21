@@ -19,11 +19,23 @@ public class VideoService {
 
     private final String ffmpeg;
     private final int secPerScene;
+    private final String watermarkFont;
 
     public VideoService(@Value("${video.ffmpeg:ffmpeg}") String ffmpeg,
-                        @Value("${video.seconds-per-scene:4}") int secPerScene) {
+                        @Value("${video.seconds-per-scene:4}") int secPerScene,
+                        @Value("${video.watermark-font:C:/Windows/Fonts/arialbd.ttf}") String watermarkFont) {
         this.ffmpeg = ffmpeg;
         this.secPerScene = secPerScene;
+        this.watermarkFont = watermarkFont;
+    }
+
+    /** لاحقة فلتر العلامة المائية للمخرجات المجانية (خط لاتيني موثوق، بلا مشاكل تشكيل عربي). */
+    private String watermarkSuffix(boolean on) {
+        if (!on) return "";
+        String font = watermarkFont.replace("\\", "/").replace(":", "\\:");
+        return ",drawtext=fontfile='" + font + "':text='Family Tales Studio  -  FREE':"
+            + "fontcolor=white@0.6:fontsize=26:x=w-tw-24:y=h-th-22:"
+            + "shadowcolor=black@0.7:shadowx=2:shadowy=2";
     }
 
     /**
@@ -31,7 +43,7 @@ public class VideoService {
      * @param audio     بايتات الصوت (قد تكون null إن لم يُسجَّل)
      * @return بايتات ملف MP4
      */
-    public byte[] assemble(List<byte[]> scenePngs, byte[] audio) throws IOException, InterruptedException {
+    public byte[] assemble(List<byte[]> scenePngs, byte[] audio, boolean watermark) throws IOException, InterruptedException {
         if (scenePngs.isEmpty()) throw new IllegalStateException("لا توجد مشاهد لتركيب الفيلم");
         Path work = Files.createTempDirectory("ft-film-");
         try {
@@ -49,7 +61,7 @@ public class VideoService {
             Files.writeString(list, sb.toString(), StandardCharsets.UTF_8);
 
             String vf = "scale=1280:720:force_original_aspect_ratio=decrease,"
-                + "pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,format=yuv420p";
+                + "pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,format=yuv420p" + watermarkSuffix(watermark);
             Path out = work.resolve("film.mp4");
 
             List<String> cmd = new ArrayList<>(List.of(
@@ -78,13 +90,13 @@ public class VideoService {
      * @param scenePngs بايتات صور المشاهد بالترتيب
      * @param sceneAudios بايتات صوت السرد لكل مشهد (عنصر قد يكون null → مشهد صامت بمدّة ثابتة)
      */
-    public byte[] assembleWithNarration(List<byte[]> scenePngs, List<byte[]> sceneAudios)
+    public byte[] assembleWithNarration(List<byte[]> scenePngs, List<byte[]> sceneAudios, boolean watermark)
             throws IOException, InterruptedException {
         if (scenePngs.isEmpty()) throw new IllegalStateException("لا توجد مشاهد لتركيب الفيلم");
         Path work = Files.createTempDirectory("ft-film-n-");
         try {
             String vf = "scale=1280:720:force_original_aspect_ratio=decrease,"
-                + "pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,format=yuv420p";
+                + "pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,format=yuv420p" + watermarkSuffix(watermark);
             StringBuilder list = new StringBuilder();
 
             for (int i = 0; i < scenePngs.size(); i++) {

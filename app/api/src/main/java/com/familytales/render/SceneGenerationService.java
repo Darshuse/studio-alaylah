@@ -65,7 +65,7 @@ public class SceneGenerationService {
     }
 
     @Async
-    public void generate(UUID jobId, UUID storyId, UUID familyId, int sceneCount) {
+    public void generate(UUID jobId, UUID storyId, UUID familyId, int sceneCount, boolean watermark) {
         GenerationJobEntity job = jobs.findById(jobId).orElseThrow();
         try {
             job.setStatus("processing");
@@ -176,12 +176,12 @@ public class SceneGenerationService {
             byte[] mp4;
             try {
                 if (tts != null && narratorVoiceId != null) {
-                    mp4 = narrateScenes(tts, narratorVoiceId, scenePrompts, pngs, job);
+                    mp4 = narrateScenes(tts, narratorVoiceId, scenePrompts, pngs, job, watermark);
                 } else {
-                    mp4 = video.assemble(pngs, audio); // لا صوت → فيلم بمدد ثابتة
+                    mp4 = video.assemble(pngs, audio, watermark); // لا صوت → فيلم بمدد ثابتة
                 }
             } catch (Exception e) {
-                mp4 = video.assemble(pngs, audio); // فشل السرد → لا يُفشل الفيلم
+                mp4 = video.assemble(pngs, audio, watermark); // فشل السرد → لا يُفشل الفيلم
             } finally {
                 if (ephemeralVoiceId != null) tts.deleteVoice(ephemeralVoiceId); // تنظيف النسخة المؤقتة
             }
@@ -219,7 +219,7 @@ public class SceneGenerationService {
      * مشهد يفشل سرده → صامت بمدّة ثابتة (لا يُفشل الفيلم كله).
      */
     private byte[] narrateScenes(TtsProvider tts, String voiceId, List<String> sceneTexts,
-                                 List<byte[]> pngs, GenerationJobEntity job)
+                                 List<byte[]> pngs, GenerationJobEntity job, boolean watermark)
             throws Exception {
         List<byte[]> narrations = new ArrayList<>();
         for (int i = 0; i < pngs.size(); i++) {
@@ -233,7 +233,7 @@ public class SceneGenerationService {
             job.setProgress(75 + (int) Math.round((i + 1) * 10.0 / pngs.size())); // 75 → 85٪
             jobs.save(job);
         }
-        return video.assembleWithNarration(pngs, narrations);
+        return video.assembleWithNarration(pngs, narrations, watermark);
     }
 
     /** أول جملتين من النص (تقديم البطل والمكان) لاستخدامهما كمرساة ثبات الشخصية. */

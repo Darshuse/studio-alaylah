@@ -94,7 +94,9 @@ public class RenderController {
         s.setStatus("rendering");
         stories.save(s);
 
-        generation.generate(job.getId(), storyId, s.getFamilyId(), count);
+        // علامة مائية للمخرجات المجانية (خطة free)؛ تُرفع مع الدفع/الاشتراك
+        boolean watermark = "free".equals(fam.getPlan());
+        generation.generate(job.getId(), storyId, s.getFamilyId(), count, watermark);
         return JobView.of(job);
     }
 
