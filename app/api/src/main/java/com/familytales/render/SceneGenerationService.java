@@ -25,7 +25,7 @@ public class SceneGenerationService {
     private final StorySceneRepository scenes;
     private final GenerationJobRepository jobs;
     private final CharacterProfileRepository characters;
-    private final ImageProvider imageProvider;
+    private final ImageProviderChain imageProvider;
     private final StorageService storage;
     private final VideoService video;
     private final MediaAssetRepository media;
@@ -43,7 +43,7 @@ public class SceneGenerationService {
         + "tasteful and modest, no text, no watermark";
 
     public SceneGenerationService(StorySceneRepository scenes, GenerationJobRepository jobs,
-                                  CharacterProfileRepository characters, ImageProvider imageProvider,
+                                  CharacterProfileRepository characters, ImageProviderChain imageProvider,
                                   StorageService storage, VideoService video, MediaAssetRepository media,
                                   StoryRevisionRepository revisions, StoryboardService storyboard,
                                   TranslationService translation, BookService book, StoryRepository stories2,

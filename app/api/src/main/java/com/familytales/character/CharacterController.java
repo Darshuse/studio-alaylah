@@ -3,7 +3,7 @@ package com.familytales.character;
 import com.familytales.family.FamilyEntity;
 import com.familytales.family.FamilyRepository;
 import com.familytales.media.StorageService;
-import com.familytales.render.ImageProvider;
+import com.familytales.render.ImageProviderChain;
 import com.familytales.render.TtsProvider;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.ObjectProvider;
@@ -70,11 +70,11 @@ public class CharacterController {
     private final CharacterProfileRepository characters;
     private final FamilyRepository families;
     private final StorageService storage;
-    private final ImageProvider imageProvider;
+    private final ImageProviderChain imageProvider;
     private final ObjectProvider<TtsProvider> ttsProvider; // موجود فقط عند tts.provider=elevenlabs
 
     public CharacterController(CharacterProfileRepository characters, FamilyRepository families,
-                              StorageService storage, ImageProvider imageProvider,
+                              StorageService storage, ImageProviderChain imageProvider,
                               ObjectProvider<TtsProvider> ttsProvider) {
         this.characters = characters;
         this.families = families;
