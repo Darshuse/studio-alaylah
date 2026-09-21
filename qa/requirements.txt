@@ -1,0 +1,9 @@
+onnxruntime
+insightface
+opencv-python-headless
+numpy
+faster-whisper
+resemblyzer
+webrtcvad-wheels
+torch
+librosa
