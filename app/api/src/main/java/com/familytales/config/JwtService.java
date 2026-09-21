@@ -14,11 +14,20 @@ import java.util.Date;
 @Service
 public class JwtService {
 
+    // السر الافتراضي للتطوير فقط — يُرفض في الإنتاج (allow-dev-secret=false)
+    private static final String DEV_DEFAULT = "dev-only-change-me-in-production-0123456789abcdef";
+
     private final SecretKey key;
     private final long ttlMinutes;
 
     public JwtService(@Value("${security.jwt.secret}") String secret,
-                      @Value("${security.jwt.ttl-minutes}") long ttlMinutes) {
+                      @Value("${security.jwt.ttl-minutes}") long ttlMinutes,
+                      @Value("${security.jwt.allow-dev-secret:true}") boolean allowDevSecret) {
+        if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length < 32)
+            throw new IllegalStateException("JWT secret ضعيف/مفقود — لازم ≥ 32 بايت. اضبط JWT_SECRET.");
+        if (!allowDevSecret && DEV_DEFAULT.equals(secret))
+            throw new IllegalStateException("ممنوع تشغيل الإنتاج بالسر الافتراضي — اضبط JWT_SECRET قويًّا "
+                + "ثم security.jwt.allow-dev-secret=false.");
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.ttlMinutes = ttlMinutes;
     }

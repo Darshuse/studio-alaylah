@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/actuator/**", "/api/v1/ping", "/api/v1/auth/**").permitAll()
+                .requestMatchers("/api/v1/billing/webhook").permitAll() // يناديها مزوّد الدفع (محميّة بسرّ في الهيدر)
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

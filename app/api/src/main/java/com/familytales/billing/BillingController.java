@@ -1,5 +1,7 @@
 package com.familytales.billing;
 
+import com.familytales.auth.UserEntity;
+import com.familytales.auth.UserRepository;
 import com.familytales.family.FamilyEntity;
 import com.familytales.family.FamilyRepository;
 import jakarta.validation.constraints.Min;
@@ -20,12 +22,17 @@ import java.util.UUID;
 public class BillingController {
 
     private final FamilyRepository families;
+    private final UserRepository users;
     private final boolean testGrantEnabled;
+    private final String webhookSecret;
 
-    public BillingController(FamilyRepository families,
-                             @Value("${billing.test-grant:false}") boolean testGrantEnabled) {
+    public BillingController(FamilyRepository families, UserRepository users,
+                             @Value("${billing.test-grant:false}") boolean testGrantEnabled,
+                             @Value("${billing.webhook-secret:}") String webhookSecret) {
         this.families = families;
+        this.users = users;
         this.testGrantEnabled = testGrantEnabled;
+        this.webhookSecret = webhookSecret;
     }
 
     public record GrantRequest(@Min(1) int credits) {}
@@ -63,6 +70,35 @@ public class BillingController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "الدفع غير مفعّل — قيد الربط بمزوّد الدفع.");
         FamilyEntity f = familyOf(auth);
         f.setPlan("subscription");
+        families.save(f);
+        return new EntitlementView(f.getPlan(), f.getStoryCredits());
+    }
+
+    public record WebhookPayload(String email, Integer credits, String plan) {}
+
+    /**
+     * نقطة webhook لمزوّد الدفع (Lemon Squeezy/Paddle/محلي). عامة، محميّة بسرّ مشترك في الهيدر.
+     * عند شراء ناجح: المزوّد يناديها بـ{email, credits?, plan?} فنمنح الرصيد/الاشتراك.
+     * الربط الحقيقي (التحقق من توقيع المزوّد + خريطة المنتجات) يُكمَّل عند إنشاء حساب الدفع.
+     */
+    @PostMapping("/webhook")
+    public EntitlementView webhook(@RequestHeader(value = "X-Webhook-Secret", required = false) String secret,
+                                   @RequestBody WebhookPayload p) {
+        if (webhookSecret == null || webhookSecret.isBlank())
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "webhook غير مضبوط");
+        if (!webhookSecret.equals(secret))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "توقيع webhook غير صحيح");
+        if (p == null || p.email() == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "email مطلوب");
+        UserEntity u = users.findByEmail(p.email().trim().toLowerCase())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "المستخدم غير موجود"));
+        FamilyEntity f = families.findFirstByOwnerId(u.getId())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "لا توجد عائلة"));
+        if (p.credits() != null && p.credits() > 0) {
+            f.setStoryCredits(f.getStoryCredits() + p.credits());
+            if ("free".equals(f.getPlan())) f.setPlan("payg");
+        }
+        if (p.plan() != null && !p.plan().isBlank()) f.setPlan(p.plan().trim());
         families.save(f);
         return new EntitlementView(f.getPlan(), f.getStoryCredits());
     }

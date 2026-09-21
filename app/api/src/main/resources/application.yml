@@ -48,6 +48,7 @@ tts:
 # الفوترة والاستحقاق (نقاط اختبار المنح محميّة — تُفعّل في التطوير فقط)
 billing:
   test-grant: ${BILLING_TEST_GRANT:false}
+  webhook-secret: ${BILLING_WEBHOOK_SECRET:}   # سرّ مشترك مع مزوّد الدفع (يُضبط في الإنتاج)
 
 # تركيب الفيديو عبر FFmpeg
 video:
@@ -66,6 +67,8 @@ security:
   jwt:
     secret: ${JWT_SECRET:dev-only-change-me-in-production-0123456789abcdef}
     ttl-minutes: ${JWT_TTL:1440}
+    # في الإنتاج: JWT_ALLOW_DEV_SECRET=false → يرفض الإقلاع بالسر الافتراضي
+    allow-dev-secret: ${JWT_ALLOW_DEV_SECRET:true}
 
 management:
   endpoints:
