@@ -45,6 +45,10 @@ tts:
     key: ${ELEVENLABS_API_KEY:}
     model: ${ELEVENLABS_MODEL:eleven_multilingual_v2}
 
+# الفوترة والاستحقاق (نقاط اختبار المنح محميّة — تُفعّل في التطوير فقط)
+billing:
+  test-grant: ${BILLING_TEST_GRANT:false}
+
 # تركيب الفيديو عبر FFmpeg
 video:
   ffmpeg: ${FFMPEG_PATH:ffmpeg}

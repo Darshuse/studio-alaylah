@@ -47,11 +47,14 @@ public class RenderController {
     }
     public record SceneView(String id, int order, String title, String caption, String imageUrl) {}
 
-    private UUID familyOf(Authentication auth) {
+    private FamilyEntity familyEntityOf(Authentication auth) {
         UUID userId = UUID.fromString((String) auth.getPrincipal());
-        FamilyEntity f = families.findFirstByOwnerId(userId)
+        return families.findFirstByOwnerId(userId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "لا توجد عائلة"));
-        return f.getId();
+    }
+
+    private UUID familyOf(Authentication auth) {
+        return familyEntityOf(auth).getId();
     }
 
     private StoryEntity ownedStory(Authentication auth, UUID id) {
@@ -67,7 +70,20 @@ public class RenderController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public JobView generate(Authentication auth, @PathVariable UUID storyId, @RequestBody(required = false) GenerateRequest req) {
         StoryEntity s = ownedStory(auth, storyId);
-        int count = (req != null && req.sceneCount() != null) ? Math.max(1, Math.min(8, req.sceneCount())) : 4;
+
+        // بوابة الاستحقاق: تحمي التكلفة وتطبّق «قصة مجانية هدية + الباقي بدفع»
+        FamilyEntity fam = familyEntityOf(auth);
+        boolean subscription = "subscription".equals(fam.getPlan());
+        if (!subscription && fam.getStoryCredits() <= 0) {
+            throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED,
+                "خلصت محاولاتك المجانية — اشترك أو اشحن رصيد قصص للمتابعة.");
+        }
+        if (!subscription) fam.setStoryCredits(fam.getStoryCredits() - 1); // اخصم قصة
+        fam.setStoriesCreated(fam.getStoriesCreated() + 1);
+        families.save(fam);
+
+        // القياسي 6 مشاهد؛ الحد الأقصى 12 (المطوّلة premium)
+        int count = (req != null && req.sceneCount() != null) ? Math.max(1, Math.min(12, req.sceneCount())) : 6;
 
         GenerationJobEntity job = new GenerationJobEntity();
         job.setStoryId(storyId);

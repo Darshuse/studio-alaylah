@@ -24,14 +24,18 @@ public class MeController {
         this.families = families;
     }
 
-    public record MeView(String userId, String email, String displayName, String familyId) {}
+    public record MeView(String userId, String email, String displayName, String familyId,
+                         String plan, int storyCredits) {}
 
     @GetMapping("/me")
     public MeView me(Authentication auth) {
         UUID userId = UUID.fromString((String) auth.getPrincipal());
         UserEntity u = users.findById(userId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "المستخدم غير موجود"));
-        String familyId = families.findFirstByOwnerId(userId).map(FamilyEntity::getId).map(UUID::toString).orElse(null);
-        return new MeView(u.getId().toString(), u.getEmail(), u.getDisplayName(), familyId);
+        FamilyEntity f = families.findFirstByOwnerId(userId).orElse(null);
+        return new MeView(u.getId().toString(), u.getEmail(), u.getDisplayName(),
+            f != null ? f.getId().toString() : null,
+            f != null ? f.getPlan() : "free",
+            f != null ? f.getStoryCredits() : 0);
     }
 }
