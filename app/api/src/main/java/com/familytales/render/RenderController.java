@@ -4,6 +4,8 @@ import com.familytales.family.FamilyEntity;
 import com.familytales.family.FamilyRepository;
 import com.familytales.media.MediaAssetRepository;
 import com.familytales.media.StorageService;
+import com.familytales.queue.GenerationMessage;
+import com.familytales.queue.GenerationProducer;
 import com.familytales.story.StoryEntity;
 import com.familytales.story.StoryRepository;
 import org.springframework.http.HttpStatus;
@@ -19,7 +21,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1")
 public class RenderController {
 
-    private final SceneGenerationService generation;
+    private final GenerationProducer producer;
     private final GenerationJobRepository jobs;
     private final StorySceneRepository scenes;
     private final StoryRepository stories;
@@ -27,10 +29,10 @@ public class RenderController {
     private final StorageService storage;
     private final MediaAssetRepository media;
 
-    public RenderController(SceneGenerationService generation, GenerationJobRepository jobs,
+    public RenderController(GenerationProducer producer, GenerationJobRepository jobs,
                             StorySceneRepository scenes, StoryRepository stories,
                             FamilyRepository families, StorageService storage, MediaAssetRepository media) {
-        this.generation = generation;
+        this.producer = producer;
         this.jobs = jobs;
         this.scenes = scenes;
         this.stories = stories;
@@ -96,7 +98,8 @@ public class RenderController {
 
         // علامة مائية للمخرجات المجانية (خطة free)؛ تُرفع مع الدفع/الاشتراك
         boolean watermark = "free".equals(fam.getPlan());
-        generation.generate(job.getId(), storyId, s.getFamilyId(), count, watermark);
+        // ينشر المهمة في الطابور ويرجع فورًا — الـworkers تعالجها (يفصل الويب عن التوليد الثقيل)
+        producer.enqueue(new GenerationMessage(job.getId(), storyId, s.getFamilyId(), count, watermark));
         return JobView.of(job);
     }
 

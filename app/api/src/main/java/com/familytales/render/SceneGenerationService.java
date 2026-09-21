@@ -8,7 +8,6 @@ import com.familytales.media.StorageService;
 import com.familytales.story.StoryRepository;
 import com.familytales.story.StoryRevisionRepository;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -64,8 +63,8 @@ public class SceneGenerationService {
         this.ttsProvider = ttsProvider;
     }
 
-    @Async
-    public void generate(UUID jobId, UUID storyId, UUID familyId, int sceneCount, boolean watermark) {
+    /** يعالج مهمة التوليد (يستدعيه مستهلك الطابور، بلا @Async — الطابور يوفّر التزامن). */
+    public void process(UUID jobId, UUID storyId, UUID familyId, int sceneCount, boolean watermark) {
         GenerationJobEntity job = jobs.findById(jobId).orElseThrow();
         try {
             job.setStatus("processing");
