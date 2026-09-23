@@ -4,6 +4,15 @@ import type { Metadata, Viewport } from "next";
 export const metadata: Metadata = {
   title: "استوديو حكايات العائلة",
   description: "من حكاية يرويها الوالد إلى فيلم عائلي عربي خاص.",
+  icons: {
+    icon: "/logo-icon.png",
+    apple: "/logo-icon.png",
+  },
+  openGraph: {
+    title: "استوديو حكايات العائلة",
+    description: "طفلك بطل حكايته… بصوتك.",
+    images: ["/logo-icon.png"],
+  },
 };
 
 export const viewport: Viewport = {

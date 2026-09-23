@@ -30,7 +30,8 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen flex flex-col justify-center px-margin py-space-xl gap-space-lg">
       <div className="flex flex-col items-center text-center gap-space-xs">
-        <div className="w-16 h-16 rounded-2xl bg-primary-container flex items-center justify-center text-secondary-container shadow-md"><Icon name="auto_stories" size={34} fill /></div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo-icon.png" alt="حكايات العائلة" className="w-28 h-28 rounded-2xl object-contain shadow-md" />
         <h1 className="text-[26px] leading-[38px] font-bold text-primary mt-2">استوديو حكايات العائلة</h1>
         <p className="text-[15px] text-on-surface-variant">{mode === "register" ? "أنشئ حسابك لتبدأ توثيق ذكرياتك" : "أهلاً بعودتك، سجّل الدخول"}</p>
       </div>
