@@ -5,7 +5,17 @@ import Icon from "@/components/Icon";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import RecordSheet from "@/components/RecordSheet";
-import { api, getToken, getDisplayName, setSession, uploadAudioBlob } from "@/lib/api";
+import { api, getToken, getDisplayName, setSession, uploadAudioBlob, type Story } from "@/lib/api";
+
+/** تاريخ نسبي بالعربي: اليوم / أمس / منذ N أيام / أسابيع / أشهر. */
+function relativeDay(iso: string): string {
+  const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
+  if (days <= 0) return "اليوم";
+  if (days === 1) return "أمس";
+  if (days < 7) return `منذ ${days} أيام`;
+  if (days < 30) return `منذ ${Math.floor(days / 7)} أسابيع`;
+  return `منذ ${Math.floor(days / 30)} أشهر`;
+}
 
 const PROMPTS = ["🎒 أول يوم في المدرسة", "🏕️ رحلة التخييم بالبر", "🥮 كعكة العيد مع الجدة", "🌧️ مطر الشتاء في الحي القديم"];
 const BARS = [2, 4, 5, 3, 6, 4, 2, 3];
@@ -21,16 +31,19 @@ export default function HomePage() {
   const [name, setName] = useState<string | null>(getDisplayName());
   const [plan, setPlan] = useState<string | null>(null);
   const [credits, setCredits] = useState<number | null>(null);
+  // undefined = جارٍ التحميل · null = لا توجد حكايات بعد · Story = آخر حكاية حقيقية
+  const [lastStory, setLastStory] = useState<Story | null | undefined>(undefined);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // اسم المستخدم الحقيقي + الاستحقاق من الخادم
+  // اسم المستخدم الحقيقي + الاستحقاق + آخر حكاية من الخادم
   useEffect(() => {
-    if (!getToken()) return;
+    if (!getToken()) { setLastStory(null); return; }
     api.me().then((m) => {
       if (m.displayName) { setName(m.displayName); setSession(getToken()!, m.familyId || undefined, m.displayName); }
       if (m.plan) setPlan(m.plan);
       if (typeof m.storyCredits === "number") setCredits(m.storyCredits);
     }).catch(() => {});
+    api.listStories().then((list) => setLastStory(list[0] ?? null)).catch(() => setLastStory(null));
   }, []);
 
   const titleFromPrompt = () => (selected != null ? PROMPTS[selected].replace(/^\S+\s/, "") : null);
@@ -106,18 +119,46 @@ export default function HomePage() {
           <p className="text-[15px] leading-[24px] text-on-surface-variant">حكايتك بصوتك، وعائلتك أبطالها في كل مشهد. دع اللحظات تروى بصدق لتحفظها الأجيال.</p>
         </div>
 
-        {/* Last memory */}
-        <div className="relative w-full h-36 rounded-xl overflow-hidden shadow-sm bg-primary-container">
-          <div className="absolute inset-0 bg-cover bg-center opacity-90" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCZ3kkSmD-yKEmGyPuxBOOSQiYKnbvIoXhvRoUBoiig4itQujz5tqXv24rgp9BW0GLic-cLJbc6woJBZgs-u7UUx9y4tG1MopylGFs80G4JTytn5aqgk_tSzMMjsXHVGHPly-pdfZ_6u06p1r_7rHlyUr10CPanXzEQACSim_MbLREV_LOoBXo7EivjerAknVg-e59t0L_3krXMHSnqjs6CVRN7DYntN0C0qQx-zA0kYhWwZhsI5cDe')" }} />
-          <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/30 to-transparent" />
-          <div className="absolute bottom-3 inset-x-3 flex items-center justify-between text-on-primary">
-            <div className="flex items-center gap-2">
-              <Icon name="auto_awesome" size={20} fill className="text-tertiary-fixed-dim" />
-              <span className="text-[12px] font-medium">آخر قصة: «يوم الصيد مع الجد بالمرسى»</span>
+        {/* آخر قصة حقيقية — أو حالة أولى دافئة (لا محتوى وهمي) */}
+        {lastStory === undefined ? (
+          <div className="w-full h-36 rounded-xl bg-surface-container animate-pulse" aria-hidden />
+        ) : lastStory ? (
+          <button
+            onClick={() => router.push((lastStory.hasFilm ? "/player?id=" : "/review?id=") + lastStory.id)}
+            className="relative w-full h-36 rounded-xl overflow-hidden shadow-sm bg-primary-container text-right active:scale-[0.99] transition-transform"
+          >
+            {lastStory.coverUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={lastStory.coverUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/30 to-transparent" />
+            {lastStory.hasFilm && (
+              <div className="absolute top-3 left-3 w-9 h-9 rounded-full bg-white/90 flex items-center justify-center shadow">
+                <Icon name="play_arrow" size={22} className="text-primary" />
+              </div>
+            )}
+            <div className="absolute bottom-3 inset-x-3 flex items-center justify-between gap-2 text-on-primary">
+              <div className="flex items-center gap-2 min-w-0">
+                <Icon name={lastStory.hasFilm ? "movie" : "edit_note"} size={20} fill className="text-tertiary-fixed-dim shrink-0" />
+                <span className="text-[13px] font-semibold truncate">آخر قصة: «{lastStory.displayTitle || lastStory.title || "حكاية بدون عنوان"}»</span>
+              </div>
+              {lastStory.createdAt && (
+                <span className="text-[12px] bg-surface/20 backdrop-blur-md px-2.5 py-0.5 rounded-full shrink-0">{relativeDay(lastStory.createdAt)}</span>
+              )}
             </div>
-            <span className="text-[12px] bg-surface/20 backdrop-blur-md px-2.5 py-0.5 rounded-full">منذ 3 أيام</span>
+          </button>
+        ) : (
+          <div className="relative w-full rounded-xl overflow-hidden shadow-sm bg-gradient-to-br from-primary-container to-primary p-space-md flex items-center gap-space-md text-on-primary">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-icon.png" alt="" className="w-16 h-16 rounded-xl object-cover shrink-0 shadow-md" />
+            <div className="flex flex-col gap-1 min-w-0">
+              <span className="text-[16px] font-semibold leading-snug">حكايتك الأولى في انتظارك</span>
+              <span className="text-[13px] text-primary-fixed-dim leading-snug">
+                {credits !== null && credits > 0 ? "أول حكاية كاملة هدية منّا — ابدأها من هنا 👇" : "ابدأ بتخليد أول ذكرى لطفلك 👇"}
+              </span>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Voice card */}
         <section className="bg-surface-container-lowest rounded-xl p-space-md shadow-[0_8px_24px_-4px_rgba(31,36,33,0.06)]">
