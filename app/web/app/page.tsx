@@ -3,15 +3,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Icon from "@/components/Icon";
 import BottomNav from "@/components/BottomNav";
-import RecordSheet from "@/components/RecordSheet";
-import { api, getToken, getDisplayName, setSession, uploadAudioBlob, type Story } from "@/lib/api";
-
-const PROMPTS = [
-  { icon: "school", text: "أول يوم في المدرسة" },
-  { icon: "camping", text: "رحلة التخييم بالبر" },
-  { icon: "cake", text: "كعكة العيد مع الجدة" },
-  { icon: "rainy", text: "مطر الشتاء في الحي القديم" },
-];
+import { ReadyStoryRow, ReadyStorySheet } from "@/components/ReadyStoryPicker";
+import { api, getToken, getDisplayName, setSession, type Story } from "@/lib/api";
+import type { ReadyStory } from "@/lib/readyStories";
 
 /** تاريخ نسبي بالعربي: اليوم / أمس / منذ N أيام / أسابيع / أشهر. */
 function relativeDay(iso: string): string {
@@ -23,12 +17,16 @@ function relativeDay(iso: string): string {
   return `منذ ${Math.floor(days / 30)} أشهر`;
 }
 
+const STEPS = [
+  { n: "١", label: "النص" },
+  { n: "٢", label: "صوتك" },
+  { n: "٣", label: "الفيلم والكتاب" },
+];
+
 export default function HomePage() {
   const router = useRouter();
-  const [selected, setSelected] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
-  const [recording, setRecording] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [picked, setPicked] = useState<ReadyStory | null>(null);
   const [name, setName] = useState<string | null>(getDisplayName());
   const [plan, setPlan] = useState<string | null>(null);
   const [credits, setCredits] = useState<number | null>(null);
@@ -46,44 +44,26 @@ export default function HomePage() {
     api.listStories().then((list) => setLastStory(list[0] ?? null)).catch(() => setLastStory(null));
   }, []);
 
-  const titleFromPrompt = () => (selected != null ? PROMPTS[selected].text : null);
-
-  // كتابة: إنشاء حكاية والانتقال مباشرة للمراجعة
+  // اكتب حكايتك: حكاية فارغة → شاشة النص
   const startWritten = async () => {
     if (!getToken()) { router.push("/login"); return; }
     setBusy(true);
     try {
-      const story = await api.createStory({ title: titleFromPrompt(), sourceKind: "written" });
+      const story = await api.createStory({ title: null, sourceKind: "written" });
       router.push("/review?id=" + story.id);
     } catch { router.push("/login"); }
     finally { setBusy(false); }
   };
 
-  // صوت: افتح لوحة التسجيل
-  const startVoice = () => {
+  // حكاية جاهزة: أنشئ الحكاية بنصها الجاهز → شاشة النص (قابل للتعديل) → صوتك
+  const useReady = async (title: string, text: string) => {
     if (!getToken()) { router.push("/login"); return; }
-    setRecording(true);
-  };
-
-  // بعد انتهاء التسجيل: أنشئ الحكاية وارفع الصوت مباشرة للتخزين ثم انتقل للمراجعة
-  const handleRecorded = async (blob: Blob) => {
-    setUploading(true);
+    setBusy(true);
     try {
-      const story = await api.createStory({ title: titleFromPrompt(), sourceKind: "voice" });
-      await uploadAudioBlob(story.id, blob);
+      const story = await api.createStory({ title, sourceKind: "written" });
+      await api.saveText(story.id, text);
       router.push("/review?id=" + story.id);
-    } catch {
-      setUploading(false);
-      setRecording(false);
-      router.push("/login");
-    }
-  };
-
-  const skipVoice = async () => {
-    try {
-      const story = await api.createStory({ title: titleFromPrompt(), sourceKind: "voice" });
-      router.push("/review?id=" + story.id);
-    } catch { router.push("/login"); }
+    } catch { setBusy(false); router.push("/login"); }
   };
 
   // شارة الاستحقاق
@@ -96,7 +76,7 @@ export default function HomePage() {
 
   return (
     <>
-      {/* ===== المسرح الداكن: صوتك أولًا ===== */}
+      {/* ===== المسرح الداكن ===== */}
       <div className="flex flex-col flex-grow text-white bg-[radial-gradient(120%_70%_at_50%_30%,#1F4A43_0%,#123832_45%,#0A1F1B_100%)]">
         <header className="pt-safe px-margin">
           <div className="h-16 flex items-center justify-between">
@@ -115,40 +95,52 @@ export default function HomePage() {
 
         <main className="flex-grow flex flex-col items-center text-center px-margin pt-space-md pb-10">
           <p className="text-[14px] text-[#A9C4BC]">{name ? `أهلاً يا ${name}` : "أهلاً بك"}</p>
-          <h1 className="text-[26px] leading-[38px] font-extrabold mt-1 text-balance">احكِ لطفلك… ونحن نحوّلها لفيلم</h1>
+          <h1 className="text-[26px] leading-[38px] font-extrabold mt-1 text-balance">اكتب حكايتك… وبصوتك نصنع فيلمها</h1>
 
-          {/* زر المايك — الفعل الرئيسي الوحيد */}
-          <div className="relative w-[150px] h-[150px] mt-10">
+          {/* الفعل الرئيسي: النص أولًا */}
+          <div className="relative w-[150px] h-[150px] mt-9">
             <span aria-hidden className="absolute -inset-10 rounded-full border border-[rgba(217,130,59,0.18)] motion-safe:animate-pulse" />
             <span aria-hidden className="absolute -inset-5 rounded-full border-[1.5px] border-[rgba(217,130,59,0.35)]" />
             <button
-              onClick={startVoice}
-              aria-label="ابدأ تسجيل الحكاية بصوتك"
-              className="relative w-full h-full rounded-full flex items-center justify-center text-white bg-gradient-to-b from-[#EE9A52] via-[#D9823B] to-[#C96A24] shadow-[0_18px_50px_-8px_rgba(217,130,59,0.75),inset_0_2px_0_rgba(255,255,255,0.35)] active:scale-95 transition-transform"
+              onClick={startWritten}
+              disabled={busy}
+              aria-label="اكتب حكايتك"
+              className="relative w-full h-full rounded-full flex items-center justify-center text-white bg-gradient-to-b from-[#EE9A52] via-[#D9823B] to-[#C96A24] shadow-[0_18px_50px_-8px_rgba(217,130,59,0.75),inset_0_2px_0_rgba(255,255,255,0.35)] active:scale-95 transition-transform disabled:opacity-70"
             >
-              <Icon name="mic" size={68} fill />
+              <Icon name={busy ? "progress_activity" : "edit_note"} size={68} fill className={busy ? "animate-spin" : ""} />
             </button>
           </div>
 
           <div className="mt-14">
-            <p className="text-[18px] font-bold">اضغط واحكِ حكايتك</p>
-            <p className="text-[13px] text-[#A9C4BC] mt-1">بصوتك… عشان طفلك يسمع بابا</p>
+            <p className="text-[18px] font-bold">اضغط واكتب حكايتك</p>
+            <p className="text-[13px] text-[#A9C4BC] mt-1">أو اختار حكاية جاهزة من تحت — وبعدها تقرأها بصوتك</p>
           </div>
 
-          <button
-            onClick={startWritten}
-            disabled={busy}
-            className="mt-5 min-h-[44px] px-5 rounded-full border border-[rgba(245,201,137,0.35)] text-[#F5C989] text-[14px] font-semibold inline-flex items-center gap-2 active:scale-95 transition-transform disabled:opacity-60"
-          >
-            <Icon name={busy ? "progress_activity" : "edit"} size={19} className={busy ? "animate-spin" : ""} />
-            <span>أو اكتب الحكاية بدل الصوت</span>
-          </button>
+          {/* مسار من ٣ خطوات */}
+          <ol className="mt-6 flex items-center gap-2 text-[12px] text-[#CFE0DA]">
+            {STEPS.map((s, i) => (
+              <li key={s.n} className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[rgba(255,255,255,0.08)] border border-[rgba(255,255,255,0.12)]">
+                  <b className="text-[#F5C989]">{s.n}</b>{s.label}
+                </span>
+                {i < STEPS.length - 1 && <Icon name="chevron_left" size={16} className="text-[#7FA79C]" />}
+              </li>
+            ))}
+          </ol>
         </main>
       </div>
 
-      {/* ===== الورقة الفاتحة: آخر حكاية + أفكار ===== */}
+      {/* ===== الورقة الفاتحة: حكايات جاهزة + آخر حكاية ===== */}
       <section className="relative -mt-6 bg-surface rounded-t-[28px] px-margin pt-3 pb-6 flex flex-col gap-space-md">
         <div className="w-10 h-1 rounded-full bg-outline-variant mx-auto" aria-hidden />
+
+        <div className="flex flex-col gap-2">
+          <div className="flex items-baseline justify-between">
+            <span className="text-[15px] font-bold text-primary">حكايات جاهزة</span>
+            <span className="text-[12px] text-secondary font-semibold">اضغط واستخدمها</span>
+          </div>
+          <ReadyStoryRow onOpen={setPicked} />
+        </div>
 
         {lastStory === undefined ? (
           <div className="h-[86px] rounded-2xl bg-surface-container animate-pulse" aria-hidden />
@@ -179,38 +171,17 @@ export default function HomePage() {
           </div>
         ) : null}
 
-        <div className="flex flex-col gap-2">
-          <span className="text-[11.5px] font-bold text-secondary">أفكار للبدء</span>
-          <div className="flex gap-2 overflow-x-auto -mx-margin px-margin pb-1">
-            {PROMPTS.map((p, i) => (
-              <button
-                key={p.text}
-                onClick={() => setSelected(selected === i ? null : i)}
-                aria-pressed={selected === i}
-                className={`shrink-0 h-11 px-4 rounded-2xl border text-[13px] font-semibold inline-flex items-center gap-2 transition-colors ${
-                  selected === i
-                    ? "bg-secondary-container text-on-secondary border-transparent"
-                    : "bg-surface-container-lowest text-on-surface border-outline-variant"
-                }`}
-              >
-                <Icon name={p.icon} size={19} className={selected === i ? "" : "text-secondary"} />
-                {p.text}
-              </button>
-            ))}
-          </div>
-        </div>
-
         <p className="flex items-center justify-center gap-1.5 text-[12px] text-on-surface-variant">
-          <Icon name="lock" size={14} />ذكرياتك لعائلتك وحدها، وتقدر تمسحها في أي وقت.
+          <Icon name="lock" size={14} />ذكرياتك وصوتك لعائلتك وحدها، وتقدر تمسحهم في أي وقت.
         </p>
       </section>
 
-      {recording && (
-        <RecordSheet
-          busy={uploading}
-          onClose={() => { if (!uploading) setRecording(false); }}
-          onDone={handleRecorded}
-          onSkip={skipVoice}
+      {picked && (
+        <ReadyStorySheet
+          story={picked}
+          busy={busy}
+          onClose={() => { if (!busy) setPicked(null); }}
+          onUse={useReady}
         />
       )}
       <BottomNav />

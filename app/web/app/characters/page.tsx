@@ -59,6 +59,8 @@ function CharactersContent() {
   };
 
   const next = () => router.push("/art-style" + (id ? "?id=" + id : ""));
+  // بطاقة «الراوي» (صوت الأب) تُدار من خطوة الصوت — لا تظهر كبطل للحكاية
+  const heroes = chars ? chars.filter((c) => c.ageLabel !== "الراوي") : null;
 
   return (
     <>
@@ -77,13 +79,13 @@ function CharactersContent() {
           {chars === null && (
             <div className="py-10 flex justify-center text-on-surface-variant"><Icon name="progress_activity" size={28} className="animate-spin" /></div>
           )}
-          {chars && chars.length === 0 && !adding && (
+          {heroes && heroes.length === 0 && !adding && (
             <div className="bg-surface-container-low rounded-xl p-space-lg flex flex-col items-center text-center gap-2">
               <Icon name="group_add" size={40} className="text-outline-variant" />
               <p className="text-[14px] text-on-surface-variant">لم تُضِف أي بطل بعد. ابدأ بإضافة فرد من عائلتك.</p>
             </div>
           )}
-          {chars && chars.map((c) => (
+          {heroes && heroes.map((c) => (
             <article key={c.id} className="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
               <div className="flex items-center justify-between gap-space-sm">
                 <div className="flex items-center gap-space-sm min-w-0">

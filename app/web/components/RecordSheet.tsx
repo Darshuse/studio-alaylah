@@ -13,8 +13,12 @@ function pickMime(): string {
 const fmt = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
 export default function RecordSheet({
-  onClose, onDone, onSkip, busy,
-}: { onClose: () => void; onDone: (blob: Blob) => void; onSkip: () => void; busy?: boolean }) {
+  onClose, onDone, onSkip, busy, title, subtitle, text, minSeconds = 0,
+}: {
+  onClose: () => void; onDone: (blob: Blob) => void; onSkip: () => void; busy?: boolean;
+  /** نص يُقرأ بصوت عالٍ أثناء التسجيل (وضع «اقرأ النص») */
+  text?: string; title?: string; subtitle?: string; minSeconds?: number;
+}) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [seconds, setSeconds] = useState(0);
   const [errMsg, setErrMsg] = useState("");
@@ -61,12 +65,19 @@ export default function RecordSheet({
 
   return (
     <div className="fixed inset-0 z-50 bg-primary/40 backdrop-blur-sm flex items-end sm:items-center justify-center" onClick={onClose}>
-      <div className="bg-surface-container-lowest w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl p-space-lg shadow-xl flex flex-col items-center gap-space-md" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-surface-container-lowest w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl p-space-lg shadow-xl flex flex-col items-center gap-space-md max-h-[94vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="w-10 h-1 rounded-full bg-surface-container-highest sm:hidden" />
         <div className="flex flex-col items-center text-center gap-1">
-          <h3 className="text-[20px] font-semibold text-primary">سجّل حكايتك بصوتك</h3>
-          <p className="text-[13px] text-on-surface-variant">تحدّث بعفوية — والشاشة شغّالة أثناء التسجيل.</p>
+          <h3 className="text-[20px] font-semibold text-primary">{title || "سجّل حكايتك بصوتك"}</h3>
+          <p className="text-[13px] text-on-surface-variant">{subtitle || "تحدّث بعفوية — والشاشة شغّالة أثناء التسجيل."}</p>
         </div>
+
+        {/* النص المطلوب قراءته (وضع الاستنساخ) */}
+        {text && (
+          <div className="w-full rounded-xl bg-surface-container-low p-3 overflow-y-auto max-h-[30vh]">
+            <p className="text-[15px] leading-[27px] text-primary whitespace-pre-line">{text}</p>
+          </div>
+        )}
 
         {/* Mic circle + waveform */}
         <div className="relative w-28 h-28 rounded-full bg-primary-container flex items-center justify-center my-2">
@@ -84,8 +95,16 @@ export default function RecordSheet({
           </div>
         )}
 
+        {phase === "recording" && minSeconds > 0 && seconds < minSeconds && (
+          <p className="text-[12.5px] text-on-surface-variant text-center">اقرأ النص كاملًا بهدوء — ابقَ {minSeconds} ثانية على الأقل لجودة استنساخ أفضل.</p>
+        )}
+
         {phase === "recorded" && audioUrl && (
           <audio controls src={audioUrl} className="w-full" />
+        )}
+
+        {phase === "recorded" && minSeconds > 0 && seconds < minSeconds && (
+          <p className="text-[12.5px] text-error bg-error-container/50 rounded-lg px-3 py-2 text-center">التسجيل قصير ({seconds} ثانية). أعد القراءة {minSeconds} ثانية على الأقل.</p>
         )}
 
         {phase === "error" && <p className="text-[13px] text-error bg-error-container/50 rounded-lg px-3 py-2 text-center">{errMsg}</p>}
@@ -104,7 +123,7 @@ export default function RecordSheet({
           )}
           {phase === "recorded" && (
             <>
-              <button disabled={busy} onClick={() => blob && onDone(blob)} className="w-full h-[52px] rounded-full bg-primary-container text-on-primary text-[17px] font-semibold flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-60">
+              <button disabled={busy || seconds < minSeconds} onClick={() => blob && onDone(blob)} className="w-full h-[52px] rounded-full bg-primary-container text-on-primary text-[17px] font-semibold flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-60">
                 <Icon name={busy ? "progress_activity" : "check"} size={22} className={busy ? "animate-spin" : ""} /><span>{busy ? "جارٍ الرفع..." : "استخدام هذا التسجيل"}</span>
               </button>
               <button disabled={busy} onClick={reset} className="w-full h-11 rounded-full bg-surface-container text-primary text-[14px] font-medium flex items-center justify-center gap-2 disabled:opacity-60">

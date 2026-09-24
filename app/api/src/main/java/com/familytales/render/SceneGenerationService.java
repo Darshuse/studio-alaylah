@@ -72,14 +72,17 @@ public class SceneGenerationService {
 
             // بذرة ثبات الهوية عبر المشاهد
             List<CharacterProfileEntity> fam = characters.findByFamilyIdOrderByCreatedAt(familyId);
-            String identitySeed = fam.stream().findFirst()
+            // «الراوي» = صوت الأب فقط (للسرد) — لا يدخل في رسم المشاهد ولا أسماء الأبطال ولا المراجع البصرية
+            List<CharacterProfileEntity> heroes = fam.stream()
+                .filter(c -> !"الراوي".equals(c.getAgeLabel())).collect(Collectors.toList());
+            String identitySeed = heroes.stream().findFirst()
                 .map(c -> c.getIdentitySeed() != null ? c.getIdentitySeed() : c.getId().toString())
                 .orElse(storyId.toString());
 
             // نص الحكاية المعتمد + أسماء الأبطال
             String storyText = revisions.findFirstByStoryIdOrderByCreatedAtDesc(storyId)
                 .map(r -> r.getBody()).orElse("ذكرى عائلية دافئة");
-            List<String> names = fam.stream()
+            List<String> names = heroes.stream()
                 .map(c -> c.getDisplayName() + (c.getAgeLabel() != null ? " (" + c.getAgeLabel() + ")" : ""))
                 .collect(Collectors.toList());
             String charSuffix = names.isEmpty() ? "" : ", featuring " + translation.toEnglish(String.join("، ", names));
@@ -92,7 +95,7 @@ public class SceneGenerationService {
             // صور مرجعية لحقن هوية الطفل الحقيقي (أفاتار كرتوني من صورته) في كل مشهد
             List<byte[]> refImages = new ArrayList<>();
             if (imageProvider.supportsReferences()) {
-                for (CharacterProfileEntity c : fam) {
+                for (CharacterProfileEntity c : heroes) {
                     if (c.getAvatarKey() != null) {
                         try { refImages.add(storage.getBytes(c.getAvatarKey())); } catch (Exception ignored) {}
                     }

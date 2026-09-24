@@ -2,6 +2,8 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Icon from "@/components/Icon";
+import { ReadyStoryRow, ReadyStorySheet } from "@/components/ReadyStoryPicker";
+import type { ReadyStory } from "@/lib/readyStories";
 import { api, getToken } from "@/lib/api";
 
 function ReviewContent() {
@@ -16,6 +18,7 @@ function ReviewContent() {
   const [busy, setBusy] = useState<null | "draft" | "approve">(null);
   const [err, setErr] = useState<string | null>(null);
   const [savedNote, setSavedNote] = useState(false);
+  const [picked, setPicked] = useState<ReadyStory | null>(null);
 
   const words = text.trim() ? text.trim().split(/\s+/).length : 0;
   const canSave = words > 0 && !!id;
@@ -43,7 +46,7 @@ function ReviewContent() {
       if (title.trim()) await api.setTitle(id, title.trim());
       await api.saveText(id, text);
       await api.approveText(id);
-      router.push("/characters?id=" + id);
+      router.push("/voice?id=" + id);
     } catch { setErr("تعذّر اعتماد النص."); setBusy(null); }
   };
 
@@ -71,9 +74,19 @@ function ReviewContent() {
           <p className="text-[13px] text-on-surface-variant">
             {sourceKind === "voice"
               ? "سجّلت صوتك — دوّن حكايتك هنا بكلماتك لتُحفظ مع التسجيل. (التفريغ التلقائي قريبًا.)"
-              : "اكتب موقفًا طريفًا أو ذكرى دافئة بكلماتك، ودعها تُحفظ للأجيال."}
+              : "اكتب موقفًا طريفًا أو ذكرى دافئة بكلماتك — أو اختر حكاية جاهزة. وبعد الاعتماد ستقرأ النص بصوتك ليُروى الفيلم بصوتك."}
           </p>
         </div>
+
+        {!loading && !text.trim() && (
+          <div className="flex flex-col gap-2 mb-4">
+            <div className="flex items-baseline justify-between">
+              <span className="text-[14px] font-bold text-primary">حكايات جاهزة</span>
+              <span className="text-[12px] text-secondary font-semibold">اضغط واستخدمها</span>
+            </div>
+            <ReadyStoryRow onOpen={setPicked} />
+          </div>
+        )}
 
         {/* Title */}
         <div className="w-full bg-surface-container-lowest rounded-xl p-4 shadow-sm mb-3">
@@ -113,7 +126,7 @@ function ReviewContent() {
         {/* Actions */}
         <div className="flex flex-col gap-2.5 mb-5">
           <button disabled={!canSave || busy !== null} onClick={approveAndNext} className="w-full h-[52px] rounded-full bg-primary-container text-on-primary text-[17px] font-semibold flex items-center justify-center gap-2 shadow-md active:scale-[0.98] disabled:opacity-50">
-            <span>{busy === "approve" ? "جارٍ الاعتماد..." : "اعتماد النص واختيار الأبطال"}</span>
+            <span>{busy === "approve" ? "جارٍ الاعتماد..." : "اعتماد النص ثم قراءته بصوتك"}</span>
             <Icon name={busy === "approve" ? "progress_activity" : "arrow_back"} size={20} className={busy === "approve" ? "animate-spin" : ""} />
           </button>
           <button disabled={!canSave || busy !== null} onClick={saveDraft} className="w-full h-[46px] rounded-full bg-surface-container-high text-primary text-[14px] font-medium flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50">
@@ -127,6 +140,14 @@ function ReviewContent() {
           <p className="text-[12px] text-on-surface-variant leading-snug">خصوصيتكم أمانة: حكايتك محفوظة لعائلتك وحدها، ويمكنك حذفها في أي لحظة.</p>
         </div>
       </main>
+
+      {picked && (
+        <ReadyStorySheet
+          story={picked}
+          onClose={() => setPicked(null)}
+          onUse={(t, body) => { setTitle(t); setText(body); setPicked(null); }}
+        />
+      )}
     </>
   );
 }
