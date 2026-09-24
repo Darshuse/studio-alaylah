@@ -1,14 +1,13 @@
 import Icon from "./Icon";
 
-/** ترويسة التبويبات الرئيسية. */
-export default function AppHeader({ tab, icon }: { tab: string; icon: string }) {
+/** ترويسة التبويبات الرئيسية. icon محفوظ لتوافق الاستدعاءات الحالية (غير مستخدم بصريًا بعد اعتماد اللوجو). */
+export default function AppHeader({ tab }: { tab: string; icon?: string }) {
   return (
     <header className="sticky top-0 z-40 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.03)]">
       <div className="h-16 px-margin flex items-center justify-between">
         <div className="flex items-center gap-space-sm">
-          <div className="w-9 h-9 rounded-full bg-primary-container flex items-center justify-center text-secondary-container shadow-[0_2px_6px_rgba(31,36,33,0.08)]">
-            <Icon name={icon} size={20} fill />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-icon.png" alt="حكايات العائلة" className="w-9 h-9 rounded-full object-cover shadow-[0_2px_6px_rgba(31,36,33,0.08)]" />
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
               <h1 className="text-[17px] leading-[26px] font-semibold text-primary">حكايات العائلة</h1>
