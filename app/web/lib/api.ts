@@ -43,6 +43,9 @@ export type Story = { id: string; title: string | null; displayTitle?: string | 
 export type AuthResponse = { token: string; userId: string; displayName: string | null; familyId: string };
 export type Me = { userId: string; email: string; displayName: string | null; familyId: string | null; plan?: string; storyCredits?: number };
 export type Entitlement = { plan: string; storyCredits: number };
+export type Sku = { id: string; provider: string; currency: string; amount: number; credits: number; label: string };
+export type Catalog = { items: Sku[]; instapayReady: boolean; instapayHandle: string; instapayName: string; cardsReady: boolean };
+export type Payment = { id: string; provider: string; sku: string; credits: number; amount: number; currency: string; status: string; ref: string | null; createdAt: string | null };
 
 export const api = {
   register: (b: { email: string; password: string; displayName?: string }): Promise<AuthResponse> =>
@@ -53,6 +56,15 @@ export const api = {
   entitlement: (): Promise<Entitlement> => req("/billing/entitlement"),
   redeem: (credits: number): Promise<Entitlement> =>
     req("/billing/redeem", { method: "POST", body: JSON.stringify({ credits }) }),
+  catalog: (): Promise<Catalog> => req("/billing/catalog"),
+  myPayments: (): Promise<Payment[]> => req("/billing/payments"),
+  payInstapay: (sku: string, reference: string): Promise<Payment> =>
+    req("/billing/manual/instapay", { method: "POST", body: JSON.stringify({ sku, reference }) }),
+  checkout: (sku: string): Promise<{ url: string }> =>
+    req("/billing/checkout", { method: "POST", body: JSON.stringify({ sku }) }),
+  adminPending: (token: string): Promise<Payment[]> => req("/billing/admin/pending", { headers: { "X-Admin-Token": token } }),
+  adminDecide: (token: string, id: string, action: "approve" | "reject"): Promise<{ applied: boolean }> =>
+    req("/billing/admin/" + id + "/" + action, { method: "POST", headers: { "X-Admin-Token": token } }),
   subscribe: (): Promise<Entitlement> => req("/billing/subscribe", { method: "POST" }),
   createStory: (b: { title?: string | null; sourceKind: string }): Promise<Story> =>
     req("/stories", { method: "POST", body: JSON.stringify(b) }),

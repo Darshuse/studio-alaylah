@@ -55,6 +55,17 @@ tts:
 billing:
   test-grant: ${BILLING_TEST_GRANT:false}
   webhook-secret: ${BILLING_WEBHOOK_SECRET:}   # سرّ مشترك مع مزوّد الدفع (يُضبط في الإنتاج)
+  admin-token: ${BILLING_ADMIN_TOKEN:}          # موافقة مدفوعات InstaPay (فارغ = معطّل)
+  app-url: ${APP_URL:}
+  instapay:
+    handle: ${INSTAPAY_HANDLE:}                 # عنوان انستاباي للاستلام (فارغ = الخيار مخفي)
+    name: ${INSTAPAY_NAME:}
+  ls:                                           # Lemon Squeezy (فارغ = الدفع بالبطاقة قريبًا)
+    api-key: ${LS_API_KEY:}
+    store-id: ${LS_STORE_ID:}
+    signing-secret: ${LS_SIGNING_SECRET:}
+    variant-usd5: ${LS_VARIANT_USD5:}
+    variant-usd15: ${LS_VARIANT_USD15:}
 
 # تركيب الفيديو عبر FFmpeg
 video:

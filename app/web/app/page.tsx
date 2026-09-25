@@ -86,9 +86,9 @@ export default function HomePage() {
               <span className="text-[16px] font-bold">حكايات العائلة</span>
             </div>
             {creditLabel && (
-              <span className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[rgba(217,130,59,0.2)] border border-[rgba(217,130,59,0.4)] text-[#F5C989] text-[12px] font-semibold">
+              <a href="/pay" className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[rgba(217,130,59,0.2)] border border-[rgba(217,130,59,0.4)] text-[#F5C989] text-[12px] font-semibold">
                 <Icon name={creditLabel.icon} size={16} fill />{creditLabel.text}
-              </span>
+              </a>
             )}
           </div>
         </header>
