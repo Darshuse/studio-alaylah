@@ -68,6 +68,9 @@ export default function LoginPage() {
         className="text-[14px] text-secondary font-medium text-center">
         {mode === "register" ? "لديك حساب؟ سجّل الدخول" : "ليس لديك حساب؟ أنشئ واحداً"}
       </button>
+      <p className="text-[11px] text-on-surface-variant text-center mt-4">
+        بالمتابعة توافق على <a href="/terms" className="underline">الشروط</a> و<a href="/privacy-policy" className="underline">الخصوصية</a>
+      </p>
     </main>
   );
 }
