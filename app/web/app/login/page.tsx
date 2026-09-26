@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Icon from "@/components/Icon";
 import { api, setSession } from "@/lib/api";
@@ -7,6 +7,8 @@ import { api, setSession } from "@/lib/api";
 export default function LoginPage() {
   const router = useRouter();
   const [mode, setMode] = useState<"login" | "register">("login");
+  // الرابط /login?mode=register يفتح التسجيل مباشرة (للإعلانات ومنشورات الصفحة)
+  useEffect(() => { if (new URLSearchParams(window.location.search).get("mode") === "register") setMode("register"); }, []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -69,7 +71,7 @@ export default function LoginPage() {
         {mode === "register" ? "لديك حساب؟ سجّل الدخول" : "ليس لديك حساب؟ أنشئ واحداً"}
       </button>
       <p className="text-[11px] text-on-surface-variant text-center mt-4">
-        بالمتابعة توافق على <a href="/terms" className="underline">الشروط</a> و<a href="/privacy-policy" className="underline">الخصوصية</a>
+        من نحن؟ <a href="/about" className="underline">تعرّف علينا</a> · بالمتابعة توافق على <a href="/terms" className="underline">الشروط</a> و<a href="/privacy-policy" className="underline">الخصوصية</a>
       </p>
     </main>
   );

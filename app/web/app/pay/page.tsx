@@ -148,7 +148,7 @@ function PayContent() {
           </section>
         )}
         <p className="text-[11px] text-on-surface-variant text-center mt-2">
-          <a href="/terms" className="underline">الشروط</a> · <a href="/refunds" className="underline">الاسترداد</a> · <a href="/privacy-policy" className="underline">الخصوصية</a>
+          <a href="/about" className="underline">من نحن</a> · <a href="/terms" className="underline">الشروط</a> · <a href="/refunds" className="underline">الاسترداد</a> · <a href="/privacy-policy" className="underline">الخصوصية</a>
         </p>
       </main>
     </>

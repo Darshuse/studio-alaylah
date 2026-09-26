@@ -22,7 +22,7 @@ export default function LegalPage({ titleAr, titleEn, updated, sections }: { tit
         </section>
       ))}
       <p className="text-[12px] text-on-surface-variant text-center">
-        <Link href="/terms">الشروط / Terms</Link> · <Link href="/refunds">الاسترداد / Refunds</Link> · <Link href="/privacy-policy">الخصوصية / Privacy</Link>
+        <Link href="/about">من نحن / About</Link> · <Link href="/terms">الشروط / Terms</Link> · <Link href="/refunds">الاسترداد / Refunds</Link> · <Link href="/privacy-policy">الخصوصية / Privacy</Link>
         <br />{SUPPORT_EMAIL}
       </p>
     </main>
