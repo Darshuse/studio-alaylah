@@ -29,3 +29,7 @@ body { font-family: "IBM Plex Sans Arabic", sans-serif; -webkit-font-smoothing: 
   body { background: #e8e6e1; display: flex; justify-content: center; }
   #app-frame { width: 420px; min-height: 100vh; box-shadow: 0 0 60px rgba(0,0,0,.12); background: #fbf9f5; position: relative; overflow-x: hidden; }
 }
+
+/* وضع صفحة الهبوط: خروج من إطار الهاتف إلى عرض كامل */
+html.landing body { background: #fbf9f5 !important; display: block !important; }
+html.landing #app-frame { width: 100% !important; max-width: 100% !important; box-shadow: none !important; overflow-x: hidden; }
