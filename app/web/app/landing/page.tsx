@@ -66,7 +66,7 @@ export default function LandingPage() {
       </header>
 
       {/* ===== الهيرو ===== */}
-      <section className="relative bg-[radial-gradient(120%_90%_at_75%_20%,#1F4A43_0%,#123832_50%,#0A1F1B_100%)] text-white">
+      <section className="relative bg-[radial-gradient(120%_90%_at_75%_20%,#0e5462_0%,#003c47_50%,#00252b_100%)] text-white">
         <div className="max-w-6xl mx-auto px-5 pt-12 md:pt-16 pb-28 md:pb-32 grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
           <div className="text-center md:text-right order-2 md:order-1 min-w-0">
             <span className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[rgba(217,130,59,0.18)] border border-[rgba(217,130,59,0.35)] text-[#F5C989] text-[12px] font-semibold mb-5">
@@ -192,7 +192,7 @@ export default function LandingPage() {
       </section>
 
       {/* ===== التذييل ===== */}
-      <footer className="bg-[#0A1F1B] text-[#8FB0A8] py-10">
+      <footer className="bg-[#00252b] text-[#8FB0A8] py-10">
         <div className="max-w-6xl mx-auto px-5 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
