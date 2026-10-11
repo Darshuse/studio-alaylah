@@ -43,6 +43,9 @@ image:
     key: ${TOGETHER_API_KEY:}
     model: ${TOGETHER_MODEL:black-forest-labs/FLUX.2-flex}
     edit-model: ${TOGETHER_EDIT_MODEL:black-forest-labs/FLUX.1-kontext-pro}
+    steps: ${TOGETHER_STEPS:28}                 # خطوات أعلى = تفاصيل أدق
+    scene-width: ${TOGETHER_SCENE_W:1280}       # دقة مشهد أعلى (720p) → فيلم 1080p أوضح
+    scene-height: ${TOGETHER_SCENE_H:720}
 
 # سرد صوتي: none (تسجيل الأب الخام) | elevenlabs (استنساخ صوت الأب ينطق كل مشهد)
 tts:

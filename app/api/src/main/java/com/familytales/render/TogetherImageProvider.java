@@ -34,15 +34,21 @@ public class TogetherImageProvider implements ImageProvider {
     private final String model;
     private final String editModel;
     private final int steps;
+    private final int sceneW;
+    private final int sceneH;
 
     public TogetherImageProvider(@Value("${image.together.key:}") String key,
                                  @Value("${image.together.model:black-forest-labs/FLUX.2-flex}") String model,
                                  @Value("${image.together.edit-model:black-forest-labs/FLUX.1-kontext-pro}") String editModel,
-                                 @Value("${image.together.steps:20}") int steps) {
+                                 @Value("${image.together.steps:28}") int steps,
+                                 @Value("${image.together.scene-width:1280}") int sceneW,
+                                 @Value("${image.together.scene-height:720}") int sceneH) {
         this.key = key;
         this.model = model;
         this.editModel = editModel;
         this.steps = steps;
+        this.sceneW = sceneW;
+        this.sceneH = sceneH;
     }
 
     @Override
@@ -61,7 +67,7 @@ public class TogetherImageProvider implements ImageProvider {
     public byte[] generateScene(String prompt, String identitySeed, List<byte[]> references) throws Exception {
         requireKey();
         long seed = Math.abs((identitySeed == null ? "seed" : identitySeed).hashCode()) % 2_000_000;
-        ObjectNode body = baseBody(prompt, 1024, 576);
+        ObjectNode body = baseBody(prompt, sceneW, sceneH);
         body.put("seed", seed);
         if (references != null && !references.isEmpty()) {
             ArrayNode refs = body.putArray("reference_images");
