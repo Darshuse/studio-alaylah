@@ -68,9 +68,9 @@ export default function LandingPage() {
       {/* ===== الهيرو ===== */}
       <section className="relative overflow-hidden bg-[radial-gradient(120%_90%_at_75%_20%,#1F4A43_0%,#123832_50%,#0A1F1B_100%)] text-white">
         <div className="max-w-6xl mx-auto px-5 pt-12 md:pt-16 pb-28 md:pb-32 grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
-          <div className="text-center md:text-right order-2 md:order-1">
+          <div className="text-center md:text-right order-2 md:order-1 min-w-0">
             <span className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[rgba(217,130,59,0.18)] border border-[rgba(217,130,59,0.35)] text-[#F5C989] text-[12px] font-semibold mb-5">
-              <Icon name="auto_awesome" size={15} fill />بالذكاء الاصطناعي
+              <Icon name="movie" size={15} fill />فيلم وكتاب مصوّر بصوتك
             </span>
             <h1 className="text-[34px] leading-[48px] md:text-[46px] md:leading-[62px] font-extrabold text-balance">
               اكتب حكايتك<br />وبصوتك نصنع <span className="text-[#F5C989]">فيلمها</span>
@@ -86,9 +86,14 @@ export default function LandingPage() {
                 <Icon name="play_circle" size={20} />كيف تعمل؟
               </a>
             </div>
+            <ul className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-5 text-[12.5px] text-[#9FBCB4] justify-center md:justify-start">
+              <li className="flex items-center gap-1.5"><Icon name="check_circle" size={16} className="text-[#F5C989]" />أول حكاية مجانية</li>
+              <li className="flex items-center gap-1.5"><Icon name="check_circle" size={16} className="text-[#F5C989]" />بدون بطاقة</li>
+              <li className="flex items-center gap-1.5"><Icon name="check_circle" size={16} className="text-[#F5C989]" />خصوصية تامة</li>
+            </ul>
           </div>
 
-          <div className="order-1 md:order-2">
+          <div className="order-1 md:order-2 min-w-0">
             <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-[rgba(245,201,137,0.35)] aspect-[16/10]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/scenes/waterfall.png" alt="مشهد من فيلم أنتجناه" className="w-full h-full object-cover" />
@@ -99,26 +104,21 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* بطاقة الخطوات العائمة */}
+        {/* بطاقة الخطوات العائمة — شريط ٣ أعمدة بفواصل */}
         <div className="relative max-w-5xl mx-auto px-5 -mb-16" id="how">
-          <div className="bg-surface rounded-3xl shadow-[0_20px_50px_-15px_rgba(3,37,33,0.35)] p-5 md:p-7 grid md:grid-cols-[1fr_auto] gap-5 items-center">
-            <div className="grid sm:grid-cols-3 gap-5">
-              {STEPS.map((s) => (
-                <div key={s.n} className="flex items-start gap-3 text-right">
-                  <span className="relative shrink-0">
-                    <span className="w-12 h-12 rounded-xl bg-primary-container text-on-primary flex items-center justify-center"><Icon name={s.icon} size={24} fill /></span>
-                    <span className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-secondary text-white text-[11px] font-bold flex items-center justify-center">{s.n}</span>
-                  </span>
-                  <div className="min-w-0">
-                    <div className="text-[15px] font-bold text-primary">{s.t}</div>
-                    <div className="text-[12px] text-on-surface-variant leading-snug mt-0.5">{s.d}</div>
-                  </div>
+          <div className="bg-surface rounded-3xl shadow-[0_20px_50px_-15px_rgba(3,37,33,0.35)] p-6 md:p-8 grid sm:grid-cols-3 gap-6 sm:gap-0 sm:divide-x sm:divide-x-reverse sm:divide-outline-variant/40">
+            {STEPS.map((s) => (
+              <div key={s.n} className="flex items-start gap-3 text-right sm:px-6 first:sm:pr-0 last:sm:pl-0">
+                <span className="relative shrink-0">
+                  <span className="w-12 h-12 rounded-xl bg-primary-container text-on-primary flex items-center justify-center"><Icon name={s.icon} size={24} fill /></span>
+                  <span className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-secondary text-white text-[11px] font-bold flex items-center justify-center">{s.n}</span>
+                </span>
+                <div className="min-w-0">
+                  <div className="text-[15px] font-bold text-primary">{s.t}</div>
+                  <div className="text-[12.5px] text-on-surface-variant leading-snug mt-0.5">{s.d}</div>
                 </div>
-              ))}
-            </div>
-            <a href={REGISTER} className="w-full md:w-auto h-14 px-8 rounded-full bg-gradient-to-b from-[#EE9A52] to-[#C96A24] text-white text-[16px] font-bold flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-transform whitespace-nowrap">
-              <Icon name="arrow_back" size={20} />ابدأ الآن
-            </a>
+              </div>
+            ))}
           </div>
         </div>
       </section>

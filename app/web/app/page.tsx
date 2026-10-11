@@ -128,7 +128,7 @@ export default function HomePage() {
 
           <div className="text-center">
             <span className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[rgba(217,130,59,0.18)] border border-[rgba(217,130,59,0.35)] text-[#F5C989] text-[12px] font-semibold mb-3">
-              <Icon name="auto_awesome" size={15} fill />بالذكاء الاصطناعي
+              <Icon name="movie" size={15} fill />فيلم وكتاب مصوّر بصوتك
             </span>
             <h1 className="text-[30px] leading-[44px] font-extrabold text-balance">
               اكتب حكايتك<br />وبصوتك نصنع <span className="text-[#F5C989]">فيلمها</span>
