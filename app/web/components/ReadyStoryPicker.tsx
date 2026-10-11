@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Icon from "./Icon";
 import { api, getToken } from "@/lib/api";
 import { READY_STORIES, renderStory, type Gender, type ReadyStory } from "@/lib/readyStories";
@@ -9,23 +9,68 @@ const GENDER_KEY = "ft_hero_gender";
 const read = (k: string) => { try { return localStorage.getItem(k); } catch { return null; } };
 const write = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch {} };
 
-/** شريط حكايات جاهزة قابل للتمرير — الضغط على واحدة يفتح ورقة التأكيد. */
+/** سلايدر حكايات جاهزة: تمرير بالسحب (snap) على الموبايل + أسهم تنقّل على الشاشات الأكبر. */
 export function ReadyStoryRow({ onOpen }: { onOpen: (s: ReadyStory) => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [atStart, setAtStart] = useState(true);
+  const [atEnd, setAtEnd] = useState(false);
+
+  // تتبّع موضع التمرير (RTL آمن عبر القيمة المطلقة) لإظهار/إخفاء الأسهم
+  const update = () => {
+    const el = ref.current; if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    const pos = Math.abs(el.scrollLeft);
+    setAtStart(pos <= 2);
+    setAtEnd(pos >= max - 2);
+  };
+  useEffect(() => { update(); const el = ref.current; if (!el) return;
+    el.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => { el.removeEventListener("scroll", update); window.removeEventListener("resize", update); };
+  }, []);
+
+  const nudge = (dir: number) => {
+    const el = ref.current; if (!el) return;
+    el.scrollBy({ left: dir * Math.round(el.clientWidth * 0.8), behavior: "smooth" });
+  };
+
   return (
-    <div className="flex gap-2.5 overflow-x-auto -mx-margin px-margin pb-1">
-      {READY_STORIES.map((s) => (
-        <button
-          key={s.id}
-          onClick={() => onOpen(s)}
-          className="shrink-0 w-[148px] rounded-2xl bg-surface-container-lowest border border-outline-variant p-3 text-right flex flex-col gap-2 active:scale-[0.98] transition-transform"
-        >
-          <span className="w-10 h-10 rounded-xl bg-primary-container text-secondary-container flex items-center justify-center">
-            <Icon name={s.icon} size={22} fill />
-          </span>
-          <span className="text-[13.5px] font-bold text-primary leading-snug">{s.title}</span>
-          <span className="text-[11.5px] text-on-surface-variant leading-snug">{s.teaser}</span>
+    <div className="relative -mx-margin">
+      <div
+        ref={ref}
+        className="flex gap-3 overflow-x-auto px-margin pb-2 snap-x snap-mandatory scroll-smooth"
+      >
+        {READY_STORIES.map((s) => (
+          <button
+            key={s.id}
+            onClick={() => onOpen(s)}
+            className="snap-start shrink-0 w-[162px] rounded-2xl bg-gradient-to-b from-surface-container-lowest to-surface-container-low border border-outline-variant/60 shadow-sm p-3.5 text-right flex flex-col gap-2 active:scale-[0.98] transition-transform"
+          >
+            <span className="w-11 h-11 rounded-xl bg-primary-container text-secondary-container flex items-center justify-center shadow-sm">
+              <Icon name={s.icon} size={23} fill />
+            </span>
+            <span className="text-[14px] font-bold text-primary leading-snug line-clamp-1">{s.title}</span>
+            <span className="text-[11.5px] text-on-surface-variant leading-snug line-clamp-2 min-h-[32px]">{s.teaser}</span>
+            <span className="inline-flex items-center gap-1 text-[11.5px] text-secondary font-bold mt-0.5">
+              ابدأ بها<Icon name="arrow_back" size={14} />
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* أسهم التنقّل (تظهر على الشاشات الأكبر فقط؛ الموبايل بالسحب) */}
+      {!atStart && (
+        <button onClick={() => nudge(1)} aria-label="السابق"
+          className="hidden sm:flex absolute top-[42%] -translate-y-1/2 right-0 w-9 h-9 rounded-full bg-surface/95 backdrop-blur shadow-md border border-outline-variant items-center justify-center text-primary active:scale-90">
+          <Icon name="chevron_right" size={22} />
         </button>
-      ))}
+      )}
+      {!atEnd && (
+        <button onClick={() => nudge(-1)} aria-label="التالي"
+          className="hidden sm:flex absolute top-[42%] -translate-y-1/2 left-0 w-9 h-9 rounded-full bg-surface/95 backdrop-blur shadow-md border border-outline-variant items-center justify-center text-primary active:scale-90">
+          <Icon name="chevron_left" size={22} />
+        </button>
+      )}
     </div>
   );
 }
