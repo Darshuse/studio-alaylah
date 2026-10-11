@@ -3,11 +3,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Icon from "@/components/Icon";
 import BottomNav from "@/components/BottomNav";
-import { ReadyStoryRow, ReadyStorySheet } from "@/components/ReadyStoryPicker";
+import { ReadyStorySheet } from "@/components/ReadyStoryPicker";
 import { api, getToken, getDisplayName, setSession, type Story } from "@/lib/api";
-import type { ReadyStory } from "@/lib/readyStories";
+import { READY_STORIES, type ReadyStory } from "@/lib/readyStories";
 
-/** تاريخ نسبي بالعربي. */
 function relativeDay(iso: string): string {
   const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
   if (days <= 0) return "اليوم";
@@ -18,25 +17,40 @@ function relativeDay(iso: string): string {
 }
 
 const STEPS = [
-  { n: "١", icon: "edit_note", t: "اكتب الحكاية", d: "اكتب القصة التي تريدها بكل تفاصيلها" },
-  { n: "٢", icon: "mic", t: "أضف صوتك", d: "اقرأ النص مرة واحدة فنستنسخ صوتك" },
-  { n: "٣", icon: "movie", t: "شاهد الفيلم", d: "نحوّل قصتك إلى فيلم وكتاب مصوّر" },
+  { n: "١", icon: "edit_note", t: "اكتب الحكاية", d: "اكتب القصة التي تريدها بكل تفاصيلها وذكرياتها", ic: "bg-primary/10 text-primary", tc: "text-primary" },
+  { n: "٢", icon: "mic", t: "أضف صوتك", d: "اقرأ النص لمرة واحدة فنستنسخ نبرتك الحنونة بأمان", ic: "bg-secondary-container/30 text-secondary", tc: "text-secondary" },
+  { n: "٣", icon: "movie", t: "شاهد الفيلم", d: "نحوّل قصتك إلى فيلم متحرك وكتاب مصوّر بجودة مبهرة", ic: "bg-primary-container text-on-primary shadow-sm", tc: "text-primary-container" },
 ];
 
 const FEATURES = [
-  { icon: "diversity_1", t: "لكل الأعمار", d: "عائلية وتعليمية" },
-  { icon: "star", t: "جودة عالية", d: "أسلوب سينمائي" },
-  { icon: "verified_user", t: "آمن وموثوق", d: "خصوصيتك أمانة" },
-  { icon: "bolt", t: "سهل وسريع", d: "خطوات معدودة" },
-  { icon: "favorite", t: "يجمع العائلة", d: "أنت وطفلك الأبطال" },
+  { icon: "favorite", t: "يجمع العائلة", d: "أنت وطفلك الأبطال", c: "text-secondary" },
+  { icon: "star", t: "جودة عالية", d: "أسلوب سينمائي", c: "text-primary-container" },
+  { icon: "verified_user", t: "آمن وموثوق", d: "خصوصيتك أمانة", c: "text-primary" },
+  { icon: "bolt", t: "سهل وسريع", d: "خطوات معدودة", c: "text-secondary" },
+  { icon: "diversity_1", t: "لكل الأعمار", d: "عائلية وتربوية", c: "text-primary-container" },
 ];
 
-// بطاقات المعرض — صور حقيقية من إنتاجنا (نفس جودة ما تصنعه)
 const SHOWCASE = [
-  { img: "/scenes/waterfall.png", cat: "مغامرة", color: "bg-secondary-container text-on-secondary-container", title: "الغابة والشلال" },
-  { img: "/scenes/bird-nest.png", cat: "قيم وسلوك", color: "bg-primary-container text-on-primary", title: "العصفور الصغير" },
-  { img: "/scenes/village.jpg", cat: "ذكريات عائلية", color: "bg-tertiary-fixed text-tertiary", title: "حارتنا القديمة" },
-  { img: "/scenes/bird-hold.jpg", cat: "تعليمية", color: "bg-secondary-fixed text-on-secondary-fixed", title: "الرفق بالحيوان" },
+  { img: "/scenes/waterfall.png", cat: "مغامرة", catC: "text-primary", tag: "كتاب + فيديو", tagIcon: "auto_stories",
+    title: "الغابة والشلال", kind: "استكشاف وشجاعة", kindC: "text-secondary-container bg-secondary-container/10",
+    d: "مغامرة استكشافية يتعلم فيها الصغير كيف يواجه المجهول بشجاعة وحكمة بصحبة رفيقه الذكي." },
+  { img: "/scenes/bird-hold.jpg", cat: "قيم وسلوك", catC: "text-tertiary-container", tag: "بصوت الوالدين", tagIcon: "volume_up",
+    title: "العصفور الصغير", kind: "تربوي هادف", kindC: "text-primary",
+    d: "قصة رقيقة عن العطف ومساعدة الضعيف، تعزز روح الرحمة والمسؤولية في قلب طفلك." },
+  { img: "/scenes/village.jpg", cat: "ذكريات عائلية", catC: "text-secondary", tag: "تراث الأجداد", tagIcon: "history_edu",
+    title: "حارتنا القديمة", kind: "نوستالجيا", kindC: "text-secondary",
+    d: "توثيق حكايات الأجداد وألعاب أيام زمان في الحارة الشعبية لتعريف الجيل الجديد بجذوره." },
+  { img: "/scenes/bird-nest.png", cat: "تعليمية", catC: "text-primary-container", tag: "بناء الشخصية", tagIcon: "school",
+    title: "الرفق بالحيوان", kind: "مغزى نبيل", kindC: "text-primary",
+    d: "تعليم الصغار آداب التعامل مع الكائنات الحية وحمايتها من خلال مواقف يومية مؤثرة." },
+];
+
+// ألوان أيقونات قائمة الحكايات الجاهزة (تدوير على التوكنز)
+const READY_TINT = [
+  "bg-primary/10 text-primary",
+  "bg-secondary-container/20 text-secondary",
+  "bg-tertiary-container/15 text-tertiary",
+  "bg-primary-fixed text-on-primary-fixed-variant",
 ];
 
 export default function HomePage() {
@@ -90,178 +104,217 @@ export default function HomePage() {
   return (
     <>
       {/* ===== الترويسة ===== */}
-      <header className="sticky top-0 z-40 bg-surface/90 backdrop-blur-xl border-b border-outline-variant/40 pt-safe">
-        <div className="h-16 px-margin flex items-center justify-between gap-2">
+      <header className="sticky top-0 z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe">
+        <div className="h-16 px-gutter flex items-center justify-between gap-2">
           <div className="flex items-center gap-2.5 min-w-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo-icon.png" alt="حكايات العائلة" className="w-10 h-10 rounded-xl object-cover shadow-sm shrink-0" />
             <div className="flex flex-col leading-tight min-w-0">
-              <span className="text-[15px] font-extrabold text-primary truncate">حكايات العائلة</span>
-              <span className="text-[10px] text-on-surface-variant truncate">لحظات من الماضي… لذكريات المستقبل</span>
+              <span className="text-[14px] font-extrabold text-primary tracking-tight truncate">حكايات العائلة</span>
+              <span className="text-[10px] text-secondary truncate">لحظات من الماضي</span>
             </div>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
             {authed
               ? creditLabel && (
-                  <a href="/pay" className="inline-flex items-center gap-1 h-9 px-2.5 rounded-full bg-secondary-fixed text-on-secondary-fixed text-[11.5px] font-semibold">
+                  <a href="/pay" className="h-9 px-2.5 rounded-full bg-secondary-container/25 text-on-secondary-container text-[11.5px] font-bold flex items-center gap-1">
                     <Icon name={creditLabel.icon} size={15} fill />{creditLabel.text}
                   </a>
                 )
-              : <a href="/login" className="inline-flex items-center h-9 px-2.5 text-[12.5px] font-semibold text-primary">دخول</a>}
-            <button onClick={startWritten} className="inline-flex items-center gap-1 h-9 px-3.5 rounded-full bg-primary text-white text-[12.5px] font-bold shadow-sm active:scale-95 transition-transform">
-              <Icon name="arrow_back" size={15} />ابدأ الآن
+              : <a href="/login" className="h-9 px-2.5 rounded-full flex items-center text-[12.5px] font-semibold text-primary hover:bg-surface-container-high">دخول</a>}
+            <button onClick={startWritten} className="h-9 px-3.5 rounded-full bg-primary-container hover:bg-primary text-on-primary text-[12.5px] font-bold flex items-center gap-1 shadow-sm transition-all">
+              <Icon name="auto_awesome" size={15} fill />ابدأ الآن
             </button>
           </div>
         </div>
       </header>
 
-      {/* ===== الهيرو ===== */}
-      <section className="relative bg-[radial-gradient(120%_90%_at_70%_15%,#1F4A43_0%,#123832_50%,#0A1F1B_100%)] text-white">
-        <div className="px-margin pt-space-md pb-16 flex flex-col gap-5">
-          <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-[rgba(245,201,137,0.35)] aspect-[16/10]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/scenes/waterfall.png" alt="مشهد من فيلم أنتجناه" className="w-full h-full object-cover" />
-            <span className="absolute bottom-2 left-2 inline-flex items-center gap-1 h-7 px-2.5 rounded-full bg-black/45 backdrop-blur text-[11px] font-semibold text-white">
-              <Icon name="movie" size={14} fill />من إنتاجنا الحقيقي
-            </span>
-          </div>
-
-          <div className="text-center">
-            <span className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[rgba(217,130,59,0.18)] border border-[rgba(217,130,59,0.35)] text-[#F5C989] text-[12px] font-semibold mb-3">
-              <Icon name="movie" size={15} fill />فيلم وكتاب مصوّر بصوتك
-            </span>
-            <h1 className="text-[30px] leading-[44px] font-extrabold text-balance">
-              اكتب حكايتك<br />وبصوتك نصنع <span className="text-[#F5C989]">فيلمها</span>
+      <main className="flex flex-col w-full pb-6">
+        {/* ===== 1. الهيرو ===== */}
+        <section className="relative overflow-hidden bg-gradient-to-b from-surface-container via-surface to-surface-container-low px-gutter pt-6 pb-8">
+          <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-secondary-container/15 blur-3xl pointer-events-none" />
+          <div className="absolute top-1/3 -left-12 w-48 h-48 rounded-full bg-primary-container/10 blur-2xl pointer-events-none" />
+          <div className="relative z-10 flex flex-col items-center text-center">
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container-lowest shadow-[0_2px_12px_rgba(14,84,98,0.08)] mb-4">
+              <Icon name="movie" size={16} className="text-secondary" fill />
+              <span className="text-[11px] font-semibold text-on-surface-variant">فيلم وكتاب مصوّر بصوتك · من إنتاجنا الحقيقي</span>
+            </div>
+            <h1 className="text-[34px] leading-[46px] font-extrabold text-primary tracking-tight mb-2.5">
+              اكتب حكايتك…<br /><span className="text-secondary">وبصوتك نصنع فيلمها</span>
             </h1>
-            <p className="text-[15px] text-[#B9D2CB] leading-relaxed mt-3">
+            <p className="text-[15px] text-on-surface-variant leading-relaxed max-w-xs mb-6">
               حوّل قصصك العائلية إلى أفلام قصيرة وكتب مصوّرة، بطلها طفلك وراويها أنت — واحتفظ بذكريات لا تُنسى.
             </p>
-          </div>
-        </div>
 
-        {/* بطاقة الخطوات العائمة */}
-        <div className="relative px-margin -mb-14" id="how">
-          <div className="bg-surface rounded-3xl shadow-[0_20px_50px_-15px_rgba(3,37,33,0.4)] p-4 flex flex-col gap-4">
-            <div className="flex flex-col gap-3">
-              {STEPS.map((s) => (
-                <div key={s.n} className="flex items-center gap-3 text-right">
-                  <span className="relative shrink-0">
-                    <span className="w-11 h-11 rounded-xl bg-primary-container text-on-primary flex items-center justify-center"><Icon name={s.icon} size={22} fill /></span>
-                    <span className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-secondary text-white text-[11px] font-bold flex items-center justify-center">{s.n}</span>
-                  </span>
-                  <div className="min-w-0 flex-grow">
-                    <div className="text-[15px] font-bold text-primary">{s.t}</div>
-                    <div className="text-[12px] text-on-surface-variant leading-snug">{s.d}</div>
+            {/* صورة حقيقية من إنتاجنا */}
+            <div className="relative w-full rounded-2xl overflow-hidden shadow-[0_12px_36px_-6px_rgba(14,84,98,0.18)] mb-6 bg-surface-container-highest aspect-[16/10]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/scenes/waterfall.png" alt="مشهد من فيلم أنتجناه" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent flex items-end p-4">
+                <div className="flex items-center gap-2 text-on-primary">
+                  <span className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-on-secondary shadow-md"><Icon name="play_arrow" size={18} fill /></span>
+                  <div className="text-right">
+                    <span className="block text-[12px] font-bold leading-none mb-0.5">مشهد من فيلم أنتجناه</span>
+                    <span className="block text-[11px] text-primary-fixed leading-none">بصوت الأب · رسم سينمائي</span>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            {/* بطاقة الخطوات */}
+            <div className="w-full bg-surface-container-lowest rounded-2xl p-4 shadow-[0_6px_24px_-4px_rgba(14,84,98,0.08)] mb-6 flex flex-col gap-3">
+              {STEPS.map((s, i) => (
+                <div key={s.n}>
+                  <div className="flex items-center gap-3 text-right">
+                    <div className={"w-9 h-9 rounded-full flex items-center justify-center shrink-0 " + s.ic}><Icon name={s.icon} size={18} fill /></div>
+                    <div className="flex-1 min-w-0">
+                      <span className={"text-[13px] font-bold " + s.tc}>{s.n}. {s.t}</span>
+                      <p className="text-[12px] text-on-surface-variant truncate">{s.d}</p>
+                    </div>
+                  </div>
+                  {i < STEPS.length - 1 && <div className="h-px bg-surface-container-highest w-full my-2.5" />}
                 </div>
               ))}
             </div>
+
             <button onClick={startWritten} disabled={busy}
-              className="h-14 rounded-full bg-gradient-to-b from-[#EE9A52] to-[#C96A24] text-white text-[16px] font-bold flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-transform disabled:opacity-70">
+              className="w-full py-4 px-6 rounded-full bg-secondary-container hover:bg-secondary text-on-secondary-container hover:text-on-secondary text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_8px_20px_-2px_rgba(254,173,75,0.4)] active:scale-[0.98] transition-all disabled:opacity-70">
+              <span>{busy ? "لحظة…" : "ابدأ الآن — أول حكاية هدية 🎁"}</span>
               <Icon name={busy ? "progress_activity" : "arrow_back"} size={20} className={busy ? "animate-spin" : ""} />
-              {busy ? "لحظة…" : "ابدأ الآن — أول حكاية هدية 🎁"}
             </button>
+            <span className="text-[11px] text-on-surface-variant mt-2">بضع دقائق فقط لصناعة فيلم عائلي يبقى للأبد</span>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ===== المزايا ===== */}
-      <section className="bg-surface pt-20 pb-space-lg">
-        <div className="px-margin grid grid-cols-2 gap-4">
-          {FEATURES.map((f) => (
-            <div key={f.t} className="flex flex-col items-center text-center gap-1.5">
-              <span className="w-14 h-14 rounded-2xl bg-surface-container-low flex items-center justify-center text-secondary shadow-sm"><Icon name={f.icon} size={26} fill /></span>
-              <div className="text-[14px] font-bold text-primary">{f.t}</div>
-              <div className="text-[12px] text-on-surface-variant -mt-1">{f.d}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ===== معرض القصص ===== */}
-      <section id="showcase" className="bg-surface-container-low py-space-lg">
-        <div className="px-margin">
-          <div className="text-center mb-5">
-            <h2 className="text-[24px] font-extrabold text-primary">قصص من قلب العائلة</h2>
-            <p className="text-[13px] text-on-surface-variant mt-1">نماذج حقيقية من جودة الرسوم التي نصنعها لحكاياتك</p>
+        {/* ===== 2. شريط المزايا ===== */}
+        <section className="w-full py-4 bg-surface-container-low overflow-x-auto px-gutter">
+          <div className="flex items-center gap-3 w-max">
+            {FEATURES.map((f) => (
+              <div key={f.t} className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface-container-lowest shadow-sm shrink-0">
+                <Icon name={f.icon} size={20} className={f.c} fill />
+                <div className="flex flex-col text-right">
+                  <span className="text-[13px] font-bold text-on-surface leading-tight">{f.t}</span>
+                  <span className="text-[10px] text-on-surface-variant">{f.d}</span>
+                </div>
+              </div>
+            ))}
           </div>
-          <div className="grid grid-cols-2 gap-3.5">
+        </section>
+
+        {/* ===== 3. معرض القصص ===== */}
+        <section className="w-full px-gutter py-8 bg-surface">
+          <div className="flex flex-col items-center text-center mb-6">
+            <div className="inline-flex items-center gap-1 text-tertiary mb-1"><Icon name="favorite" size={16} fill /><span className="text-[11px] font-bold">من وحي الذاكرة</span></div>
+            <h2 className="text-[26px] font-extrabold text-primary">قصص من قلب العائلة</h2>
+            <p className="text-[12px] text-on-surface-variant mt-1">نماذج حقيقية من جودة الرسوم والكتب التي نصنعها لحكاياتك</p>
+          </div>
+          <div className="grid grid-cols-1 gap-4">
             {SHOWCASE.map((c) => (
-              <button key={c.title} onClick={startWritten}
-                className="group text-right rounded-2xl overflow-hidden bg-surface shadow-sm active:scale-[0.99] transition-transform">
-                <div className="relative aspect-[4/3] overflow-hidden">
+              <div key={c.title} className="group bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_4px_18px_rgba(14,84,98,0.06)] flex flex-col">
+                <div className="relative h-48 w-full bg-surface-container-highest">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={c.img} alt={c.title} className="w-full h-full object-cover" />
-                  <span className={"absolute top-2 right-2 h-6 px-2.5 rounded-full text-[11px] font-bold flex items-center " + c.color}>{c.cat}</span>
+                  <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md shadow-sm"><span className={"text-[11px] font-bold " + c.catC}>{c.cat}</span></div>
+                  <div className="absolute bottom-2 left-2 px-2.5 py-1 rounded-lg bg-inverse-surface/75 text-inverse-on-surface text-[11px] font-medium flex items-center gap-1 backdrop-blur-sm"><Icon name={c.tagIcon} size={14} />{c.tag}</div>
                 </div>
-                <div className="p-2.5">
-                  <div className="text-[13.5px] font-bold text-primary truncate">{c.title}</div>
-                  <div className="text-[11.5px] text-secondary font-semibold mt-0.5 flex items-center gap-1"><Icon name="add" size={14} />اصنع مثلها</div>
+                <div className="p-4 flex flex-col gap-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="text-[17px] text-on-surface font-bold">{c.title}</h3>
+                    <span className={"text-[11px] px-2 py-0.5 rounded-full " + c.kindC}>{c.kind}</span>
+                  </div>
+                  <p className="text-[13px] text-on-surface-variant leading-relaxed">{c.d}</p>
+                  <div className="pt-2 flex items-center justify-between">
+                    <button onClick={startWritten} className="h-9 px-4 rounded-full bg-primary-container text-on-primary text-[12.5px] font-bold flex items-center gap-1.5 shadow-sm active:scale-95 transition-all">
+                      <Icon name="add" size={16} />اصنع مثلها
+                    </button>
+                    <span className="text-[12px] text-on-surface-variant flex items-center gap-1"><Icon name="bolt" size={15} className="text-secondary" fill />جاهزة فورًا</span>
+                  </div>
                 </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ===== 4. حكايات جاهزة بضغطة (قائمة) ===== */}
+        <section className="w-full px-gutter py-8 bg-surface-container-low">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-[22px] font-bold text-primary">حكايات جاهزة بضغطة</h2>
+              <p className="text-[12px] text-on-surface-variant">اختر موضوعًا مفضلًا وخصّصه بصوتك في ثوانٍ</p>
+            </div>
+            <span className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary"><Icon name="touch_app" size={18} /></span>
+          </div>
+          <div className="flex flex-col gap-2.5">
+            {READY_STORIES.map((s, i) => (
+              <button key={s.id} onClick={() => setPicked(s)}
+                className="p-3.5 rounded-xl bg-surface-container-lowest hover:bg-surface-container-high transition-colors shadow-sm flex items-center justify-between gap-3 text-right active:scale-[0.99]">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className={"w-10 h-10 rounded-full flex items-center justify-center shrink-0 " + READY_TINT[i % READY_TINT.length]}><Icon name={s.icon} size={20} fill /></span>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-[13.5px] font-bold text-on-surface truncate">{s.title}</span>
+                    <span className="text-[12px] text-on-surface-variant truncate">{s.teaser}</span>
+                  </div>
+                </div>
+                <span className="shrink-0 px-3 py-1.5 rounded-full bg-surface-container text-primary text-[11.5px] font-bold flex items-center gap-1"><span>ابدأ بها</span><Icon name="arrow_back" size={14} /></span>
               </button>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ===== حكايات جاهزة + آخر حكاية (وظائف التطبيق) ===== */}
-      <section className="bg-surface py-space-lg">
-        <div className="px-margin flex flex-col gap-space-md">
-          {name && <p className="text-[14px] text-on-surface-variant">أهلاً يا {name} 👋</p>}
+        {/* ===== آخر حكاية (للمسجّل) ===== */}
+        {lastStory && (
+          <section className="w-full px-gutter pt-5 bg-surface">
+            <span className="text-[12px] font-bold text-secondary">آخر حكاية</span>
+            <button onClick={() => router.push((lastStory.hasFilm ? "/player?id=" : "/review?id=") + lastStory.id)}
+              className="mt-2 w-full flex items-center gap-3 text-right bg-surface-container-lowest rounded-2xl p-3 shadow-sm active:scale-[0.99] transition-transform">
+              <div className="relative w-[56px] h-[56px] rounded-xl overflow-hidden bg-primary-container shrink-0 flex items-center justify-center">
+                {lastStory.coverUrl
+                  // eslint-disable-next-line @next/next/no-img-element
+                  ? <img src={lastStory.coverUrl} alt="" className="w-full h-full object-cover" />
+                  : <Icon name="edit_note" size={24} className="text-on-primary" />}
+              </div>
+              <div className="flex flex-col min-w-0 flex-grow">
+                <span className="text-[14px] font-bold text-primary truncate">{lastStory.displayTitle || lastStory.title || "حكاية بدون عنوان"}</span>
+                <span className="text-[12px] text-on-surface-variant">{lastStory.hasFilm ? "جاهزة للمشاهدة" : lastStory.status === "rendering" ? "قيد الإنتاج…" : "مسودة"}{lastStory.createdAt ? ` • ${relativeDay(lastStory.createdAt)}` : ""}</span>
+              </div>
+              <span className="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center shrink-0"><Icon name={lastStory.hasFilm ? "play_arrow" : "arrow_back"} size={20} /></span>
+            </button>
+          </section>
+        )}
 
-          <div className="flex flex-col gap-2">
-            <div className="flex items-baseline justify-between">
-              <span className="text-[16px] font-extrabold text-primary">حكايات جاهزة بضغطة</span>
-              <span className="text-[12px] text-secondary font-semibold">اضغط واستخدمها</span>
+        {/* ===== 5. الخصوصية ===== */}
+        <section className="w-full px-gutter py-6 bg-surface">
+          <div className="w-full p-4 rounded-2xl bg-surface-container-lowest shadow-[0_4px_16px_rgba(0,0,0,0.04)] flex items-center gap-3.5">
+            <span className="w-11 h-11 rounded-full bg-primary-container/10 text-primary-container flex items-center justify-center shrink-0"><Icon name="lock" size={22} /></span>
+            <div className="flex-1 min-w-0 text-right">
+              <span className="text-[13px] font-bold text-primary block">أمان وخصوصية تامة</span>
+              <p className="text-[12.5px] text-on-surface-variant leading-snug">ذكرياتك وصوتك وصور أطفالك ملكٌ لعائلتك وحدها، ويمكنك حذفها فورًا في أي لحظة.</p>
             </div>
-            <ReadyStoryRow onOpen={setPicked} />
           </div>
+        </section>
 
-          {lastStory && (
-            <div className="flex flex-col gap-2">
-              <span className="text-[12px] font-bold text-secondary">آخر حكاية</span>
-              <button onClick={() => router.push((lastStory.hasFilm ? "/player?id=" : "/review?id=") + lastStory.id)}
-                className="flex items-center gap-3 text-right bg-surface-container-low rounded-2xl p-3 active:scale-[0.99] transition-transform">
-                <div className="relative w-[56px] h-[56px] rounded-xl overflow-hidden bg-primary-container shrink-0 flex items-center justify-center">
-                  {lastStory.coverUrl
-                    // eslint-disable-next-line @next/next/no-img-element
-                    ? <img src={lastStory.coverUrl} alt="" className="w-full h-full object-cover" />
-                    : <Icon name="edit_note" size={24} className="text-secondary-container" />}
-                </div>
-                <div className="flex flex-col min-w-0 flex-grow">
-                  <span className="text-[14px] font-bold text-primary truncate">{lastStory.displayTitle || lastStory.title || "حكاية بدون عنوان"}</span>
-                  <span className="text-[12px] text-on-surface-variant">
-                    {lastStory.hasFilm ? "جاهزة للمشاهدة" : lastStory.status === "rendering" ? "قيد الإنتاج…" : "مسودة"}
-                    {lastStory.createdAt ? ` • ${relativeDay(lastStory.createdAt)}` : ""}
-                  </span>
-                </div>
-                <span className="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center shrink-0"><Icon name={lastStory.hasFilm ? "play_arrow" : "arrow_back"} size={20} /></span>
-              </button>
+        {/* ===== 6. خاتمة CTA ===== */}
+        <section className="relative w-full px-gutter py-10 bg-gradient-to-b from-primary to-primary-container text-on-primary overflow-hidden text-center rounded-t-3xl shadow-2xl">
+          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full bg-secondary-container/20 blur-3xl pointer-events-none" />
+          <div className="relative z-10 flex flex-col items-center">
+            <span className="w-14 h-14 rounded-full bg-surface-container-lowest/15 backdrop-blur-md flex items-center justify-center text-secondary-container mb-4 shadow-inner"><Icon name="auto_stories" size={32} fill /></span>
+            <h2 className="text-[26px] font-bold mb-2">ابدأ بأول حكاية… هدية</h2>
+            <p className="text-[14px] text-on-primary-container max-w-xs mb-6">اكتب قصتك الأولى الآن، واسمع صوتك الحنون يحكيها لطفلك في فيلم يبقى ذكرى لا تغيب.</p>
+            <button onClick={startWritten} disabled={busy}
+              className="w-full py-4 px-6 rounded-full bg-secondary-container hover:bg-secondary text-on-secondary-container hover:text-on-secondary text-[15px] font-bold flex items-center justify-center gap-2 shadow-[0_10px_28px_rgba(0,0,0,0.25)] active:scale-95 transition-all disabled:opacity-70">
+              <Icon name={busy ? "progress_activity" : "auto_awesome"} size={22} fill className={busy ? "animate-spin" : ""} /><span>اصنع حكايتك الآن</span>
+            </button>
+            <div className="flex items-center justify-center gap-5 mt-8 text-[12px] text-on-primary-container">
+              <a href="/about" className="hover:text-on-primary">من نحن</a>
+              <span className="opacity-40">•</span>
+              <a href="/pay" className="hover:text-on-primary">الأسعار</a>
+              <span className="opacity-40">•</span>
+              <a href="/privacy-policy" className="hover:text-on-primary">الخصوصية</a>
             </div>
-          )}
-
-          <p className="flex items-center gap-1.5 text-[12px] text-on-surface-variant">
-            <Icon name="lock" size={14} />ذكرياتك وصوتك لعائلتك وحدها، وتقدر تمسحهم في أي وقت.
-          </p>
-        </div>
-      </section>
-
-      {/* ===== خاتمة CTA ===== */}
-      <section className="bg-primary text-white py-space-lg">
-        <div className="px-margin text-center flex flex-col items-center gap-4">
-          <h2 className="text-[24px] font-extrabold text-balance">ابدأ بأول حكاية… <span className="text-[#F5C989]">هدية</span></h2>
-          <p className="text-[14px] text-[#B9D2CB]">اكتب قصتك الأولى الآن، واسمع صوتك يحكيها لطفلك.</p>
-          <button onClick={startWritten} disabled={busy}
-            className="h-14 px-8 rounded-full bg-gradient-to-b from-[#EE9A52] to-[#C96A24] text-white text-[16px] font-bold flex items-center gap-2 shadow-lg active:scale-[0.98] transition-transform disabled:opacity-70">
-            <Icon name={busy ? "progress_activity" : "auto_stories"} size={20} fill className={busy ? "animate-spin" : ""} />اصنع حكايتك
-          </button>
-          <div className="flex items-center gap-4 text-[12px] text-[#8FB0A8] mt-1">
-            <a href="/about" className="hover:text-white">من نحن</a>
-            <a href="/pay" className="hover:text-white">الأسعار</a>
-            <a href="/privacy-policy" className="hover:text-white">الخصوصية</a>
+            <div className="mt-6 text-[11px] text-on-primary-container/70">© حكايات العائلة</div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
       {picked && (
         <ReadyStorySheet story={picked} busy={busy}
