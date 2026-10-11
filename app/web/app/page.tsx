@@ -116,7 +116,7 @@ export default function HomePage() {
       </header>
 
       {/* ===== الهيرو ===== */}
-      <section className="relative overflow-hidden bg-[radial-gradient(120%_90%_at_70%_15%,#1F4A43_0%,#123832_50%,#0A1F1B_100%)] text-white">
+      <section className="relative bg-[radial-gradient(120%_90%_at_70%_15%,#1F4A43_0%,#123832_50%,#0A1F1B_100%)] text-white">
         <div className="px-margin pt-space-md pb-16 flex flex-col gap-5">
           <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-[rgba(245,201,137,0.35)] aspect-[16/10]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
