@@ -179,8 +179,11 @@ public class SceneGenerationService {
             try {
                 if (tts != null && narratorVoiceId != null) {
                     mp4 = narrateScenes(tts, narratorVoiceId, scenePrompts, pngs, job, watermark);
+                } else if (audio != null && audio.length > 0) {
+                    mp4 = video.assemble(pngs, audio, watermark); // تسجيل خام فوق المشاهد
                 } else {
-                    mp4 = video.assemble(pngs, audio, watermark); // لا صوت → فيلم بمدد ثابتة
+                    // لا صوت إطلاقًا → مشاهد صامتة لكن بحركة Ken Burns (بدل سلايد ثابت)
+                    mp4 = video.assembleWithNarration(pngs, new ArrayList<>(java.util.Collections.nCopies(pngs.size(), (byte[]) null)), watermark);
                 }
             } catch (Exception e) {
                 mp4 = video.assemble(pngs, audio, watermark); // فشل السرد → لا يُفشل الفيلم
