@@ -52,6 +52,8 @@ export const api = {
     req("/auth/register", { method: "POST", body: JSON.stringify(b) }),
   login: (b: { email: string; password: string }): Promise<AuthResponse> =>
     req("/auth/login", { method: "POST", body: JSON.stringify(b) }),
+  googleLogin: (idToken: string): Promise<AuthResponse> =>
+    req("/auth/google", { method: "POST", body: JSON.stringify({ idToken }) }),
   me: (): Promise<Me> => req("/me"),
   entitlement: (): Promise<Entitlement> => req("/billing/entitlement"),
   redeem: (credits: number): Promise<Entitlement> =>

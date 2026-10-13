@@ -89,6 +89,8 @@ security:
     ttl-minutes: ${JWT_TTL:1440}
     # في الإنتاج: JWT_ALLOW_DEV_SECRET=false → يرفض الإقلاع بالسر الافتراضي
     allow-dev-secret: ${JWT_ALLOW_DEV_SECRET:true}
+  google:
+    client-id: ${GOOGLE_CLIENT_ID:}   # معرّف عميل OAuth (Web) — فارغ = دخول جوجل معطّل
 
 management:
   endpoints:

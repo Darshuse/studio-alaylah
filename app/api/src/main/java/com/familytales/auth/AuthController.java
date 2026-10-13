@@ -21,4 +21,9 @@ public class AuthController {
     public AuthResponse login(@Valid @RequestBody LoginRequest req) {
         return auth.login(req);
     }
+
+    @PostMapping("/google")
+    public AuthResponse google(@Valid @RequestBody GoogleAuthRequest req) {
+        return auth.googleSignIn(req);
+    }
 }

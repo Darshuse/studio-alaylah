@@ -1,8 +1,13 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Icon from "@/components/Icon";
 import { api, setSession } from "@/lib/api";
+
+const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare global { interface Window { google?: any } }
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,6 +19,7 @@ export default function LoginPage() {
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const gbtn = useRef<HTMLDivElement>(null);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +34,35 @@ export default function LoginPage() {
       setErr(e instanceof Error ? e.message : "تعذّر إتمام العملية");
     } finally { setBusy(false); }
   };
+
+  // تسجيل الدخول بجوجل (Google Identity Services): نأخذ ID Token ونرسله للباك
+  useEffect(() => {
+    if (!GOOGLE_CLIENT_ID) return;
+    const onCredential = async (resp: { credential?: string }) => {
+      if (!resp.credential) return;
+      setErr(null); setBusy(true);
+      try {
+        const res = await api.googleLogin(resp.credential);
+        setSession(res.token, res.familyId, res.displayName);
+        router.push("/");
+      } catch (e: unknown) {
+        setErr(e instanceof Error ? e.message : "تعذّر الدخول بجوجل");
+      } finally { setBusy(false); }
+    };
+    const render = () => {
+      if (!window.google || !gbtn.current) return;
+      window.google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: onCredential });
+      window.google.accounts.id.renderButton(gbtn.current, {
+        theme: "outline", size: "large", shape: "pill", text: "continue_with", width: 320, locale: "ar",
+      });
+    };
+    if (window.google) { render(); return; }
+    const s = document.createElement("script");
+    s.src = "https://accounts.google.com/gsi/client";
+    s.async = true; s.defer = true; s.onload = render;
+    document.head.appendChild(s);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <main className="min-h-screen flex flex-col justify-center px-margin py-space-xl gap-space-lg">
@@ -65,6 +100,17 @@ export default function LoginPage() {
           <span>{busy ? "لحظة..." : mode === "register" ? "إنشاء الحساب" : "تسجيل الدخول"}</span>
         </button>
       </form>
+
+      {GOOGLE_CLIENT_ID && (
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex items-center gap-3 w-full">
+            <span className="h-px flex-1 bg-outline-variant/60" />
+            <span className="text-[12px] text-on-surface-variant">أو</span>
+            <span className="h-px flex-1 bg-outline-variant/60" />
+          </div>
+          <div ref={gbtn} className="flex justify-center min-h-[44px]" />
+        </div>
+      )}
 
       <button onClick={() => { setErr(null); setMode(mode === "register" ? "login" : "register"); }}
         className="text-[14px] text-secondary font-medium text-center">

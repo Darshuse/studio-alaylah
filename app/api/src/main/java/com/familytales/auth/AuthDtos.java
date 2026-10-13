@@ -13,5 +13,8 @@ public class AuthDtos {
 
     public record LoginRequest(@Email @NotBlank String email, @NotBlank String password) {}
 
+    /** تسجيل الدخول بجوجل: توكن الهوية (ID Token) من زر Google في الواجهة. */
+    public record GoogleAuthRequest(@NotBlank String idToken) {}
+
     public record AuthResponse(String token, String userId, String displayName, String familyId) {}
 }
